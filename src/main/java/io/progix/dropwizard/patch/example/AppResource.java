@@ -1,9 +1,8 @@
 package io.progix.dropwizard.patch.example;
 
-import com.fasterxml.jackson.core.JsonPointer;
 import io.dropwizard.jersey.PATCH;
 import io.progix.dropwizard.patch.hooks.PatchRequest;
-import org.apache.log4j.Logger;
+import io.progix.dropwizard.patch.hooks.handlers.AddHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +14,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import org.apache.log4j.Logger;
+
+import com.fasterxml.jackson.core.JsonPointer;
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -41,7 +44,7 @@ public class AppResource {
 
 		List<String> path = new ArrayList<String>();
 		JsonPointer pointer = JsonPointer.valueOf("/a/b/c");
-		while(pointer.tail() != null) {
+		while (pointer.tail() != null) {
 			String s = pointer.getMatchingProperty();
 			path.add(s);
 			pointer = pointer.tail();
@@ -54,6 +57,14 @@ public class AppResource {
 	@PATCH
 	@Path("/{id}")
 	public void updateUser(PatchRequest request) {
+
+		request.add(new AddHandler() {
+
+			@Override
+			public void put(JsonPointer path, int index, Object value) {
+
+			}
+		});
 
 	}
 }

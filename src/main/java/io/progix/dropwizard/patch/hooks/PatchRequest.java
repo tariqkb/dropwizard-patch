@@ -1,53 +1,100 @@
 package io.progix.dropwizard.patch.hooks;
 
+import io.progix.dropwizard.patch.PatchOperationNotSupportedException;
+import io.progix.dropwizard.patch.hooks.handlers.AddHandler;
+import io.progix.dropwizard.patch.hooks.handlers.CopyHandler;
+import io.progix.dropwizard.patch.hooks.handlers.MoveHandler;
+import io.progix.dropwizard.patch.hooks.handlers.RemoveHandler;
+import io.progix.dropwizard.patch.hooks.handlers.ReplaceHandler;
+import io.progix.dropwizard.patch.hooks.handlers.TestHandler;
+
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * POJO that can hold all possible information a PATCH request can contain as
- * defined in RFC 6902.
+ * TODO: Need to implement deserializer to convert an array into this object
  * 
  * @author tariq
  *
  */
-public class PatchRequest {
+public abstract class PatchRequest {
 
-	@JsonProperty("op")
-	@NotNull
-	private PatchOperation operation;
+	private List<PatchInstruction> instructions;
 
-	@NotNull
-	private String path;
-
-	private List<Object> value;
-
-	@NotNull
-	private String from;
-
-	public PatchRequest(PatchOperation operation, String path, List<Object> value, String from) {
-		this.operation = operation;
-		this.path = path;
-		this.value = value;
-		this.from = from;
+	public PatchRequest(List<PatchInstruction> instructions) {
+		super();
+		this.instructions = instructions;
 	}
 
-	public PatchOperation getOperation() {
-		return operation;
+	public List<PatchInstruction> getInstructions() {
+		return instructions;
 	}
 
-	public String getPath() {
-		return path;
+	public void process() {
+		for (PatchInstruction instruction : instructions) {
+			switch (instruction.getOperation()) {
+			case ADD:
+				if (addHandler == null) {
+					throw new PatchOperationNotSupportedException(PatchOperation.ADD);
+				}
+				break;
+			case COPY:
+				break;
+			case MOVE:
+				break;
+			case REMOVE:
+				break;
+			case REPLACE:
+				break;
+			case TEST:
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
-	public Object getValue() {
-		return value;
+	@JsonIgnore
+	private AddHandler addHandler;
+
+	@JsonIgnore
+	private RemoveHandler removeHandler;
+
+	@JsonIgnore
+	private ReplaceHandler replaceHandler;
+
+	@JsonIgnore
+	private MoveHandler moveHandler;
+
+	@JsonIgnore
+	private CopyHandler copyHandler;
+
+	@JsonIgnore
+	private TestHandler testHandler;
+
+	public void add(AddHandler handler) {
+		this.addHandler = handler;
 	}
 
-	public String getFrom() {
-		return from;
+	public void remove(RemoveHandler handler) {
+		this.removeHandler = handler;
+	}
+
+	public void replace(ReplaceHandler handler) {
+		this.replaceHandler = handler;
+	}
+
+	public void move(MoveHandler handler) {
+		this.moveHandler = handler;
+	}
+
+	public void copy(CopyHandler handler) {
+		this.copyHandler = handler;
+	}
+
+	public void test(TestHandler handler) {
+		this.testHandler = handler;
 	}
 
 }

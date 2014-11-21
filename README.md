@@ -1,6 +1,6 @@
-dropwizard-patch
+HTTP Patch implementation for Dropwizard
 ================
 
-Implementation of HTTP PATCH (RFC5789) using JSON Patch (RFC6902) for Dropwizard
+Work in progress!
 
-Work in progress
+Implementation of HTTP PATCH (RFC5789) using JSON Patch (RFC6902) for Dropwizard

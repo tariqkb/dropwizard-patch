@@ -1,0 +1,20 @@
+apply plugin: 'java'
+apply plugin:'application'
+
+sourceCompatibility = 1.7
+version = '0.0.1'
+mainClassName = "io.progix.dropwizard.patch.example.App"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile (
+            'io.dropwizard:dropwizard-core:0.7.1',
+    )
+}
+
+run {
+    args 'server', './build/resources/main/test.yml'
+}

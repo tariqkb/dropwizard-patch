@@ -1,11 +1,11 @@
-package io.progix.dropwizard.patch.api;
+package io.progix.dropwizard.patch.hooks;
 
-import io.progix.dropwizard.patch.api.handlers.AddHandler;
-import io.progix.dropwizard.patch.api.handlers.CopyHandler;
-import io.progix.dropwizard.patch.api.handlers.MoveHandler;
-import io.progix.dropwizard.patch.api.handlers.RemoveHandler;
-import io.progix.dropwizard.patch.api.handlers.ReplaceHandler;
-import io.progix.dropwizard.patch.api.handlers.TestHandler;
+import io.progix.dropwizard.patch.hooks.handlers.AddHandler;
+import io.progix.dropwizard.patch.hooks.handlers.CopyHandler;
+import io.progix.dropwizard.patch.hooks.handlers.MoveHandler;
+import io.progix.dropwizard.patch.hooks.handlers.RemoveHandler;
+import io.progix.dropwizard.patch.hooks.handlers.ReplaceHandler;
+import io.progix.dropwizard.patch.hooks.handlers.TestHandler;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

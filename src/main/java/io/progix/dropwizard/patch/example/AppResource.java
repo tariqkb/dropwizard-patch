@@ -1,8 +1,11 @@
 package io.progix.dropwizard.patch.example;
 
+import com.fasterxml.jackson.core.JsonPointer;
 import io.dropwizard.jersey.PATCH;
-import io.progix.dropwizard.patch.api.PatchRequest;
+import io.progix.dropwizard.patch.hooks.PatchRequest;
+import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +21,7 @@ import javax.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public class AppResource {
 
+	private static final Logger logger = Logger.getLogger(AppResource.class);
 	private List<User> users = Arrays.asList(new User(1, "Mark", "mark@email.com"), new User(2, "Tariq", "tariq@test.com"), new User(3, "Alli",
 			"alli@roman.com"));
 
@@ -34,6 +38,16 @@ public class AppResource {
 				return user;
 			}
 		}
+
+		List<String> path = new ArrayList<String>();
+		JsonPointer pointer = JsonPointer.valueOf("/a/b/c");
+		while(pointer.tail() != null) {
+			String s = pointer.getMatchingProperty();
+			path.add(s);
+			pointer = pointer.tail();
+		}
+
+		logger.info("TEST: " + path);
 		throw new RuntimeException("No user found");
 	}
 

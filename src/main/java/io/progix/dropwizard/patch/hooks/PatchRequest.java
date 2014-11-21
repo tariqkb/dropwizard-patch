@@ -1,4 +1,4 @@
-package io.progix.dropwizard.patch.api;
+package io.progix.dropwizard.patch.hooks;
 
 import java.util.List;
 

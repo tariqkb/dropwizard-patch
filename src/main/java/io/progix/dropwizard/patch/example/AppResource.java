@@ -2,7 +2,7 @@ package io.progix.dropwizard.patch.example;
 
 import io.dropwizard.jersey.PATCH;
 import io.progix.dropwizard.patch.hooks.PatchRequest;
-import io.progix.dropwizard.patch.hooks.handlers.AddHandler;
+import io.progix.dropwizard.patch.hooks.handlers.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,7 +61,47 @@ public class AppResource {
 		request.add(new AddHandler() {
 
 			@Override
-			public void put(JsonPointer path, int index, Object value) {
+			public void addElement(JsonPointer path, int index, Object value) {
+
+			}
+
+			@Override
+			public void add(JsonPointer path, Object value) {
+
+			}
+		});
+
+		request.copy(new CopyHandler() {
+			@Override
+			public void copy(JsonPointer from, JsonPointer path) {
+
+			}
+		});
+
+		request.move(new MoveHandler() {
+			@Override
+			public void move(JsonPointer from, JsonPointer path) {
+
+			}
+		});
+
+		request.remove(new RemoveHandler() {
+			@Override
+			public void remove(JsonPointer path) {
+
+			}
+		});
+
+		request.replace(new ReplaceHandler() {
+			@Override
+			public void replace(JsonPointer path, Object value) {
+
+			}
+		});
+
+		request.test(new TestHandler() {
+			@Override
+			public void test(JsonPointer path, Object value) {
 
 			}
 		});

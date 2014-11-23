@@ -4,5 +4,5 @@ import com.fasterxml.jackson.core.JsonPointer;
 
 public interface MoveHandler {
 
-    public void move(JsonPointer from, JsonPointer to, Object value);
+    public void move(JsonPointer from, JsonPointer path);
 }

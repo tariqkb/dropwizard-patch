@@ -4,5 +4,5 @@ import com.fasterxml.jackson.core.JsonPointer;
 
 public interface CopyHandler {
 
-    public void copy(JsonPointer path, String value);
+    public void copy(JsonPointer from, JsonPointer path);
 }

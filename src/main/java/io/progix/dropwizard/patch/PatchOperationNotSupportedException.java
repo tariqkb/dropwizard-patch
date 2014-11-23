@@ -12,7 +12,7 @@ import io.progix.dropwizard.patch.hooks.PatchOperation;
  * @author Tariq Bugrara
  *
  */
-public class PatchOperationNotSupportedException extends Exception {
+public class PatchOperationNotSupportedException extends RuntimeException {
 
 	private static final long serialVersionUID = -300115785663781825L;
 

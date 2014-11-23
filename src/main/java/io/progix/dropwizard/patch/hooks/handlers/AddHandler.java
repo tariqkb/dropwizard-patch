@@ -10,5 +10,7 @@ import com.fasterxml.jackson.core.JsonPointer;
  */
 public interface AddHandler {
 
-    public void put(JsonPointer path, int index, Object value);
+    public void addElement(JsonPointer path, int index, Object value);
+
+    public void add(JsonPointer path, Object value);
 }

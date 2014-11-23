@@ -1,0 +1,4 @@
+[
+  { "op": "replace", "path": "/a/b/c", "value": 42 },
+  { "op": "test", "path": "/a/b/c", "value": "C" }
+]

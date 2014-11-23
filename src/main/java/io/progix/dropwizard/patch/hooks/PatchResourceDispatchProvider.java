@@ -44,7 +44,7 @@ public class PatchResourceDispatchProvider implements ResourceMethodDispatchProv
 		}
 
 		if (method.getMethod().isAnnotationPresent(PATCH.class)) {
-			dispatcher = new PatchHookDispatcher();
+//			dispatcher = new PatchHookDispatcher();
 		}
 
 		return dispatcher;

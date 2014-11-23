@@ -12,9 +12,16 @@ repositories {
 dependencies {
     compile (
             'io.dropwizard:dropwizard-core:0.7.1',
+            'io.dropwizard:dropwizard-testing:0.7.1'
     )
 }
 
 run {
     args 'server', './build/resources/main/test.yml'
+}
+
+test {
+    filter {
+        includeTestsMatching "io.progix.dropwizard.patch.text.*"
+    }
 }

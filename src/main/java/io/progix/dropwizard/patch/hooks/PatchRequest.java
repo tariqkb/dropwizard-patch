@@ -1,100 +1,139 @@
 package io.progix.dropwizard.patch.hooks;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonPointer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.progix.dropwizard.patch.PatchOperationNotSupportedException;
-import io.progix.dropwizard.patch.hooks.handlers.AddHandler;
-import io.progix.dropwizard.patch.hooks.handlers.CopyHandler;
-import io.progix.dropwizard.patch.hooks.handlers.MoveHandler;
-import io.progix.dropwizard.patch.hooks.handlers.RemoveHandler;
-import io.progix.dropwizard.patch.hooks.handlers.ReplaceHandler;
-import io.progix.dropwizard.patch.hooks.handlers.TestHandler;
+import io.progix.dropwizard.patch.hooks.handlers.*;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
  * TODO: Need to implement deserializer to convert an array into this object
- * 
- * @author tariq
  *
+ * @author tariq
  */
-public abstract class PatchRequest {
+@JsonDeserialize(using = PatchRequestDeserializer.class)
+public class PatchRequest {
 
-	private List<PatchInstruction> instructions;
+    private List<PatchInstruction> instructions;
 
-	public PatchRequest(List<PatchInstruction> instructions) {
-		super();
-		this.instructions = instructions;
-	}
+    public PatchRequest(List<PatchInstruction> instructions) {
+        super();
+        this.instructions = instructions;
+    }
 
-	public List<PatchInstruction> getInstructions() {
-		return instructions;
-	}
+    public List<PatchInstruction> getInstructions() {
+        return instructions;
+    }
 
-	public void process() {
-		for (PatchInstruction instruction : instructions) {
-			switch (instruction.getOperation()) {
-			case ADD:
-				if (addHandler == null) {
-					throw new PatchOperationNotSupportedException(PatchOperation.ADD);
-				}
-				break;
-			case COPY:
-				break;
-			case MOVE:
-				break;
-			case REMOVE:
-				break;
-			case REPLACE:
-				break;
-			case TEST:
-				break;
-			default:
-				break;
-			}
-		}
-	}
+    public void process() {
+        for (PatchInstruction instruction : instructions) {
+            switch (instruction.getOperation()) {
+                case ADD:
+                    if (addHandler == null) {
+                        throw new PatchOperationNotSupportedException(PatchOperation.ADD);
+                    }
 
-	@JsonIgnore
-	private AddHandler addHandler;
+				    /* Get last path element to determine if this add operation adds to an array */
+                    JsonPointer path = JsonPointer.compile(instruction.getPath());
+                    while (path.tail() != null) {
+                        path = path.tail();
+                    }
 
-	@JsonIgnore
-	private RemoveHandler removeHandler;
+                    String lastPointer = path.getMatchingProperty();
+                    try {
+                        Integer index = Integer.parseInt(lastPointer);
+                        addHandler
+                                .addElement(JsonPointer.compile(instruction.getPath()), index, instruction.getValue());
+                    } catch (NumberFormatException e) {
+                        addHandler.add(path, instruction.getValue());
+                    }
 
-	@JsonIgnore
-	private ReplaceHandler replaceHandler;
+                    break;
+                case COPY:
+                    if (copyHandler == null) {
+                        throw new PatchOperationNotSupportedException(PatchOperation.ADD);
+                    }
 
-	@JsonIgnore
-	private MoveHandler moveHandler;
+                    copyHandler.copy(JsonPointer.compile(instruction.getFrom()),
+                            JsonPointer.compile(instruction.getPath()));
+                    break;
+                case MOVE:
+                    if (moveHandler == null) {
+                        throw new PatchOperationNotSupportedException(PatchOperation.ADD);
+                    }
 
-	@JsonIgnore
-	private CopyHandler copyHandler;
+                    moveHandler.move(JsonPointer.compile(instruction.getFrom()),
+                            JsonPointer.compile(instruction.getPath()));
+                    break;
+                case REMOVE:
+                    if (removeHandler == null) {
+                        throw new PatchOperationNotSupportedException(PatchOperation.ADD);
+                    }
 
-	@JsonIgnore
-	private TestHandler testHandler;
+                    removeHandler.remove(JsonPointer.compile(instruction.getPath()));
+                    break;
+                case REPLACE:
+                    if (replaceHandler == null) {
+                        throw new PatchOperationNotSupportedException(PatchOperation.ADD);
+                    }
 
-	public void add(AddHandler handler) {
-		this.addHandler = handler;
-	}
+                    replaceHandler.replace(JsonPointer.compile(instruction.getPath()), instruction.getValue());
+                    break;
+                case TEST:
+                    if (testHandler == null) {
+                        throw new PatchOperationNotSupportedException(PatchOperation.ADD);
+                    }
 
-	public void remove(RemoveHandler handler) {
-		this.removeHandler = handler;
-	}
+                    testHandler.test(JsonPointer.compile(instruction.getPath()), instruction.getValue());
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
-	public void replace(ReplaceHandler handler) {
-		this.replaceHandler = handler;
-	}
+    @JsonIgnore
+    private AddHandler addHandler;
 
-	public void move(MoveHandler handler) {
-		this.moveHandler = handler;
-	}
+    @JsonIgnore
+    private RemoveHandler removeHandler;
 
-	public void copy(CopyHandler handler) {
-		this.copyHandler = handler;
-	}
+    @JsonIgnore
+    private ReplaceHandler replaceHandler;
 
-	public void test(TestHandler handler) {
-		this.testHandler = handler;
-	}
+    @JsonIgnore
+    private MoveHandler moveHandler;
+
+    @JsonIgnore
+    private CopyHandler copyHandler;
+
+    @JsonIgnore
+    private TestHandler testHandler;
+
+    public void add(AddHandler handler) {
+        this.addHandler = handler;
+    }
+
+    public void remove(RemoveHandler handler) {
+        this.removeHandler = handler;
+    }
+
+    public void replace(ReplaceHandler handler) {
+        this.replaceHandler = handler;
+    }
+
+    public void move(MoveHandler handler) {
+        this.moveHandler = handler;
+    }
+
+    public void copy(CopyHandler handler) {
+        this.copyHandler = handler;
+    }
+
+    public void test(TestHandler handler) {
+        this.testHandler = handler;
+    }
 
 }

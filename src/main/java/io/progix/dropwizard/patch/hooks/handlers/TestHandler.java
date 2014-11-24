@@ -5,4 +5,7 @@ import com.fasterxml.jackson.core.JsonPointer;
 public interface TestHandler {
 
     public void test(JsonPointer path, Object value);
+
+    public void testElement(JsonPointer path, Object value);
+
 }

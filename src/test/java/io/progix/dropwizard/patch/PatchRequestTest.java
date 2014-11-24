@@ -19,10 +19,19 @@ public class PatchRequestTest {
 
     @Test
     public void deserializesFromJSON() throws Exception {
+        PatchInstruction add = new PatchInstruction(PatchOperation.ADD, "/a/b/c", new ArrayList<Object>(Arrays
+                .asList(42)), null);
+        PatchInstruction addElement = new PatchInstruction(PatchOperation.ADD, "/a/b/1", new ArrayList<Object>(Arrays
+                .asList(42)), null);
+
         PatchInstruction replace = new PatchInstruction(PatchOperation.REPLACE, "/a/b/c", new ArrayList<Object>(Arrays
                 .asList(42)), null);
+
+        PatchInstruction remove = new PatchInstruction(PatchOperation.REMOVE, "/a/b/c", null, null);
+        PatchInstruction removeElement = new PatchInstruction(PatchOperation.REMOVE, "/a/b/1", null, null);
+
         PatchInstruction test = new PatchInstruction(PatchOperation.TEST, "/a/b/c", new ArrayList<Object>(Arrays
-                .asList("C")), null);
+                .asList("C", "D")), null);
         PatchRequest request = new PatchRequest(Arrays.asList(replace, test));
         assertThat(MAPPER.readValue(fixture("fixtures/patchrequest.json"), PatchRequest.class))
                 .isEqualTo(request);

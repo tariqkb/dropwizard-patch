@@ -136,4 +136,23 @@ public class PatchRequest {
         this.testHandler = handler;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        PatchRequest that = (PatchRequest) o;
+
+        if (!instructions.equals(that.instructions))
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return instructions.hashCode();
+    }
 }

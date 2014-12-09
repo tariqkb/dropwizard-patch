@@ -1,6 +1,9 @@
 package io.progix.dropwizard.patch.hooks.handlers;
 
-import com.fasterxml.jackson.core.JsonPointer;
+import io.progix.dropwizard.patch.hooks.JsonPatchValue;
+import io.progix.dropwizard.patch.hooks.JsonPath;
+
+import java.util.List;
 
 /**
  * Serves the handler for the ADD operation. RFC5789 states 3 possible uses of the add operation. Only the case of
@@ -10,6 +13,6 @@ import com.fasterxml.jackson.core.JsonPointer;
  */
 public interface AddHandler {
 
-    public void add(JsonPointer path, Object value);
+    public boolean add(JsonPath path, JsonPatchValue values);
 
 }

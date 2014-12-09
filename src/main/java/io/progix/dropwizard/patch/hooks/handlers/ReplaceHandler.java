@@ -1,9 +1,12 @@
 package io.progix.dropwizard.patch.hooks.handlers;
 
-import com.fasterxml.jackson.core.JsonPointer;
+import io.progix.dropwizard.patch.hooks.JsonPatchValue;
+import io.progix.dropwizard.patch.hooks.JsonPath;
+
+import java.util.List;
 
 public interface ReplaceHandler {
 
-    public void replace(JsonPointer path, Object value);
+    public boolean replace(JsonPath path, JsonPatchValue value);
 
 }

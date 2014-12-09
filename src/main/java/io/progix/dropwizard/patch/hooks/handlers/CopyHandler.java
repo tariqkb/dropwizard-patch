@@ -1,8 +1,8 @@
 package io.progix.dropwizard.patch.hooks.handlers;
 
-import com.fasterxml.jackson.core.JsonPointer;
+import io.progix.dropwizard.patch.hooks.JsonPath;
 
 public interface CopyHandler {
 
-    public void copy(JsonPointer from, JsonPointer path);
+    public boolean copy(JsonPath from, JsonPath path);
 }

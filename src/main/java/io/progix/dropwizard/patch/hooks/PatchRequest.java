@@ -17,6 +17,18 @@ import java.util.List;
 public class PatchRequest {
 
     private List<PatchInstruction> instructions;
+    @JsonIgnore
+    private AddHandler addHandler;
+    @JsonIgnore
+    private RemoveHandler removeHandler;
+    @JsonIgnore
+    private ReplaceHandler replaceHandler;
+    @JsonIgnore
+    private MoveHandler moveHandler;
+    @JsonIgnore
+    private CopyHandler copyHandler;
+    @JsonIgnore
+    private TestHandler testHandler;
 
     public PatchRequest(List<PatchInstruction> instructions) {
         super();
@@ -27,90 +39,60 @@ public class PatchRequest {
         return instructions;
     }
 
-    public void process() {
+    public void apply() {
         for (PatchInstruction instruction : instructions) {
+            JsonPath path = new JsonPath(JsonPointer.compile(instruction.getPath()));
+
             switch (instruction.getOperation()) {
                 case ADD:
                     if (addHandler == null) {
                         throw new PatchOperationNotSupportedException(PatchOperation.ADD);
                     }
 
-				    /* Get last path element to determine if this add operation adds to an array */
-                    JsonPointer path = JsonPointer.compile(instruction.getPath());
-                    while (path.tail() != null) {
-                        path = path.tail();
-                    }
-
-                    String lastPointer = path.getMatchingProperty();
-                    try {
-                        Integer index = Integer.parseInt(lastPointer);
-                        addHandler
-                                .addElement(JsonPointer.compile(instruction.getPath()), index, instruction.getValue());
-                    } catch (NumberFormatException e) {
-                        addHandler.add(path, instruction.getValue());
-                    }
+                    addHandler.add(path, new JsonPatchValue(instruction.getValue()));
 
                     break;
                 case COPY:
                     if (copyHandler == null) {
-                        throw new PatchOperationNotSupportedException(PatchOperation.ADD);
+                        throw new PatchOperationNotSupportedException(PatchOperation.COPY);
                     }
 
-                    copyHandler.copy(JsonPointer.compile(instruction.getFrom()),
-                            JsonPointer.compile(instruction.getPath()));
+                    copyHandler.copy(new JsonPath(JsonPointer.compile(instruction.getFrom())), path);
                     break;
                 case MOVE:
                     if (moveHandler == null) {
-                        throw new PatchOperationNotSupportedException(PatchOperation.ADD);
+                        throw new PatchOperationNotSupportedException(PatchOperation.MOVE);
                     }
 
-                    moveHandler.move(JsonPointer.compile(instruction.getFrom()),
-                            JsonPointer.compile(instruction.getPath()));
+                    moveHandler.move(new JsonPath(JsonPointer.compile(instruction.getFrom())),
+                            path);
                     break;
                 case REMOVE:
                     if (removeHandler == null) {
-                        throw new PatchOperationNotSupportedException(PatchOperation.ADD);
+                        throw new PatchOperationNotSupportedException(PatchOperation.REMOVE);
                     }
 
-                    removeHandler.remove(JsonPointer.compile(instruction.getPath()));
+                    removeHandler.remove(path);
                     break;
                 case REPLACE:
                     if (replaceHandler == null) {
-                        throw new PatchOperationNotSupportedException(PatchOperation.ADD);
+                        throw new PatchOperationNotSupportedException(PatchOperation.REPLACE);
                     }
 
-                    replaceHandler.replace(JsonPointer.compile(instruction.getPath()), instruction.getValue());
+                    replaceHandler.replace(path, new JsonPatchValue(instruction.getValue()));
                     break;
                 case TEST:
                     if (testHandler == null) {
-                        throw new PatchOperationNotSupportedException(PatchOperation.ADD);
+                        throw new PatchOperationNotSupportedException(PatchOperation.TEST);
                     }
 
-                    testHandler.test(JsonPointer.compile(instruction.getPath()), instruction.getValue());
+                    testHandler.test(path, new JsonPatchValue(instruction.getValue()));
                     break;
                 default:
                     break;
             }
         }
     }
-
-    @JsonIgnore
-    private AddHandler addHandler;
-
-    @JsonIgnore
-    private RemoveHandler removeHandler;
-
-    @JsonIgnore
-    private ReplaceHandler replaceHandler;
-
-    @JsonIgnore
-    private MoveHandler moveHandler;
-
-    @JsonIgnore
-    private CopyHandler copyHandler;
-
-    @JsonIgnore
-    private TestHandler testHandler;
 
     public void add(AddHandler handler) {
         this.addHandler = handler;

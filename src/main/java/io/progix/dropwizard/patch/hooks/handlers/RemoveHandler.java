@@ -1,9 +1,10 @@
 package io.progix.dropwizard.patch.hooks.handlers;
 
-import com.fasterxml.jackson.core.JsonPointer;
+
+import io.progix.dropwizard.patch.hooks.JsonPath;
 
 public interface RemoveHandler {
 
-    public void remove(JsonPointer path);
+    public boolean remove(JsonPath path);
 
 }

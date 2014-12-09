@@ -46,12 +46,12 @@ public class PatchInstructionDeserializer extends JsonDeserializer<PatchInstruct
         List<Object> values = null;
         JsonNode valueNode = node.get("value");
         if (valueNode != null) {
-            values = new ArrayList<Object>();
+            values = new ArrayList<>();
             if (valueNode.isArray()) {
                 Iterator<JsonNode> iterator = valueNode.elements();
                 while (iterator.hasNext()) {
                     JsonNode elementNode = iterator.next();
-                    JsonParser p = valueNode.traverse();
+                    JsonParser p = elementNode.traverse();
                     if(!p.hasCurrentToken()) {
                         p.nextToken();
                     }

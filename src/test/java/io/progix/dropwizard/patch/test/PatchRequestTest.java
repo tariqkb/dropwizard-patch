@@ -1,4 +1,4 @@
-package io.progix.dropwizard.patch;
+package io.progix.dropwizard.patch.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.jackson.Jackson;

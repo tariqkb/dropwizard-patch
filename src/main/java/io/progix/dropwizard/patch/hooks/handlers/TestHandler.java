@@ -1,9 +1,13 @@
 package io.progix.dropwizard.patch.hooks.handlers;
 
-import com.fasterxml.jackson.core.JsonPointer;
+
+import io.progix.dropwizard.patch.hooks.JsonPatchValue;
+import io.progix.dropwizard.patch.hooks.JsonPath;
+
+import java.util.List;
 
 public interface TestHandler {
 
-    public void test(JsonPointer path, Object value);
+    public boolean test(JsonPath path, JsonPatchValue value);
 
 }

@@ -1,17 +1,21 @@
 package io.progix.dropwizard.patch.hooks;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Wrapper class for Jackson's com.fasterxml.jackson.core.JsonPointer
+ * Wrapper class for Jackson's com.fasterxml.jackson.core.JsonPath
  */
-public class JsonPointer {
+public class JsonPath {
 
     private List<String> properties;
     private List<Integer> elements;
 
-    public JsonPointer(com.fasterxml.jackson.core.JsonPointer pointer) {
-        while (pointer.tail() != null) {
+    public JsonPath(com.fasterxml.jackson.core.JsonPointer pointer) {
+        this.properties = new ArrayList<>();
+        this.elements = new ArrayList<>();
+
+        while (pointer != null) {
             if (pointer.mayMatchProperty()) {
                 properties.add(pointer.getMatchingProperty());
             } else {

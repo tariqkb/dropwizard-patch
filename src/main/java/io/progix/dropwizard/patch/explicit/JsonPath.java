@@ -16,7 +16,7 @@ public class JsonPath {
         this.elements = new ArrayList<>();
 
         while (pointer != null) {
-            if (pointer.mayMatchProperty()) {
+            if (pointer.mayMatchProperty() && !pointer.getMatchingProperty().isEmpty()) {
                 properties.add(new JsonPathProperty(pointer.getMatchingProperty()));
             } else {
                 properties.add(new JsonPathProperty());
@@ -45,5 +45,10 @@ public class JsonPath {
 
     public JsonPathElement element(int index) {
         return elements.get(index);
+    }
+
+    public boolean endsAt(int index) {
+        index++;
+        return !property(index).exists() && !element(index).exists();
     }
 }

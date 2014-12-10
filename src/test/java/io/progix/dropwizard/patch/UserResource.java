@@ -11,6 +11,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -50,67 +51,126 @@ public class UserResource {
         request.add(new AddHandler() {
 
             @Override
-            public boolean add(JsonPath path, JsonPatchValue value) {
+            public void add(JsonPath path, JsonPatchValue value) {
                 if (path.property(0).exists()) {
                     if (path.property(0).is("pets")) {
-                        if (path.element(1).exists()) {
+                        if (path.element(1).exists() && path.endsAt(1)) {
                             int petIndex = path.element(1).val();
                             if (!path.property(2).exists()) {
                                 user.getPets().addAll(petIndex, value.to(Pet.class));
-                                return true;
                             }
-                        } else {
+                        } else if(path.endsAt(0)) {
                             user.getPets().addAll(value.to(Pet.class));
-                            return true;
                         }
-                    } else if(path.property(0).is("name")) {
+                    } else if (path.property(0).is("name")) {
                         user.setName(value.one(String.class));
-                        return true;
-                    } else if(path.property(0).is("emailAddresses")) {
-                        if(path.element(1).exists()) {
+                    } else if (path.property(0).is("emailAddresses")) {
+                        if (path.element(1).exists() && path.endsAt(1)) {
                             user.getEmailAddresses().addAll(path.element(1).val(), value.to(String.class));
-                        } else {
+                        } else if(path.endsAt(0)) {
                             user.getEmailAddresses().addAll(value.to(String.class));
                         }
-                        return true;
                     }
                 }
-                return false;
             }
         });
 
         request.copy(new CopyHandler() {
             @Override
-            public boolean copy(JsonPath from, JsonPath path) {
-
-                return false;
+            public void copy(JsonPath from, JsonPath path) {
+                if (from.property(0).is("pets") && path.property(0).is("pets") && from.endsAt(1) && path.endsAt(1)) {
+                    if (from.element(1).exists() && path.element(1).exists()) {
+                        Pet pet = user.getPets().get(from.element(1).val());
+                        user.getPets().add(path.element(1).val(), pet);
+                    }
+                } else if (from.property(0).is("emailAddresses") && path.property(0).is("emailAddresses") && from.endsAt(1) && path.endsAt(1)) {
+                    if (from.element(1).exists() && path.element(1).exists()) {
+                        String emailAddress = user.getEmailAddresses().get(from.element(1).val());
+                        user.getEmailAddresses().add(path.element(1).val(), emailAddress);
+                    }
+                }
             }
         });
 
         request.move(new MoveHandler() {
             @Override
-            public boolean move(JsonPath from, JsonPath path) {
-                return false;
+            public void move(JsonPath from, JsonPath path) {
+                if (from.property(0).is("pets") && path.property(0).is("pets")) {
+                    if (from.element(1).exists() && path.element(1).exists() && from.endsAt(1) && path.endsAt(1)) {
+                        int fromIndex = from.element(1).val();
+                        Pet pet = user.getPets().get(fromIndex);
+                        user.getPets().remove(fromIndex);
+
+                        user.getPets().add(path.element(1).val(), pet);
+                    }
+                } else if (from.property(0).is("emailAddresses") && path.property(0).is("emailAddresses") && from.endsAt(1) && path.endsAt(1)) {
+                    if (from.element(1).exists() && path.element(1).exists()) {
+                        int fromIndex = from.element(1).val();
+                        String emailAddress = user.getEmailAddresses().get(fromIndex);
+                        user.getEmailAddresses().remove(fromIndex);
+
+                        user.getEmailAddresses().add(path.element(1).val(), emailAddress);
+                    }
+                }
             }
         });
 
         request.remove(new RemoveHandler() {
             @Override
-            public boolean remove(JsonPath path) {
-                return false;
+            public void remove(JsonPath path) {
+                if (path.property(0).is("pets") && path.element(1).exists() && path.endsAt(1)) {
+                    user.getPets().remove(path.element(1).val());
+                } else if (path.property(0).is("emailAddresses") && path.element(1).exists() && path.endsAt(1)) {
+                    user.getEmailAddresses().remove(path.element(1).val());
+                }
             }
         });
 
         request.replace(new ReplaceHandler() {
             @Override
-            public boolean replace(JsonPath path, JsonPatchValue value) {
-                return false;
+            public void replace(JsonPath path, JsonPatchValue value) {
+                if (path.property(0).exists()) {
+                    if (path.property(0).is("pets")) {
+                        if (path.element(1).exists() && path.endsAt(1)) {
+                            int petIndex = path.element(1).val();
+                            user.getPets().set(petIndex, value.one(Pet.class));
+                        } else if(path.endsAt(0)) {
+                            user.setPets(value.to(Pet.class));
+                        }
+                    } else if (path.property(0).is("name") && path.endsAt(0)) {
+                        user.setName(value.one(String.class));
+                    } else if (path.property(0).is("emailAddresses")) {
+                        if (path.element(1).exists() && path.endsAt(1)) {
+                            user.getEmailAddresses().set(path.element(1).val(), value.one(String.class));
+                        } else if(path.endsAt(0)) {
+                            user.setEmailAddresses(value.to(String.class));
+                        }
+                    }
+                }
             }
         });
 
         request.test(new TestHandler() {
             @Override
             public boolean test(JsonPath path, JsonPatchValue value) {
+                if (path.property(0).exists()) {
+                    if (path.property(0).is("pets")) {
+                        if (path.element(1).exists() && path.endsAt(1)) {
+                            int petIndex = path.element(1).val();
+                            return Objects.equals(user.getPets().get(petIndex), value.one(Pet.class));
+                        } else if(path.endsAt(0)) {
+                            return Objects.equals(user.getPets(), value.to(Pet.class));
+                        }
+                    } else if (path.property(0).is("name") && path.endsAt(0)) {
+                        return Objects.equals(user.getName(), value.one(String.class));
+                    } else if (path.property(0).is("emailAddresses")) {
+                        if (path.element(1).exists() && path.endsAt(1)) {
+                            return Objects.equals(user.getEmailAddresses().get(path.element(1).val()), value.one(String.class));
+                        } else if(path.endsAt(0)) {
+                            return Objects.equals(user.getEmailAddresses(), value.to(String.class));
+                        }
+                    }
+                }
                 return false;
             }
         });

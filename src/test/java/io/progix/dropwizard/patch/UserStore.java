@@ -17,7 +17,6 @@ public class UserStore {
         this.tariq = new User(0, "Tariq", new ArrayList<>(Arrays.asList("tariq@progix.io")), new ArrayList<>(Arrays.asList(cat)));
         this.alli = new User(1, "Alli", new ArrayList<>(Arrays.asList("alli@beeb.com")), new ArrayList<>(Arrays.asList(cat, dog)));
         this.narmeen = new User(2, "Narmeen", new ArrayList<String>(), new ArrayList<>(Arrays.asList(mouse)));
-
     }
 
     public Pet getCat() {

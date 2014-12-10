@@ -1,5 +1,7 @@
 package io.progix.dropwizard.patch.explicit;
 
+import java.util.Objects;
+
 public class JsonPathProperty {
 
     private String value;
@@ -21,6 +23,6 @@ public class JsonPathProperty {
     }
 
     public boolean is(String value) {
-        return this.value.equals(value);
+        return Objects.equals(this.value, value);
     }
 }

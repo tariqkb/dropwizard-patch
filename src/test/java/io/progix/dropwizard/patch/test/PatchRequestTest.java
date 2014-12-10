@@ -32,6 +32,7 @@ public class PatchRequestTest {
 
         PatchInstruction test = new PatchInstruction(PatchOperation.TEST, "/a/b/c", new ArrayList<Object>(Arrays
                 .asList("C", "D")), null);
+
         PatchRequest request = new PatchRequest(Arrays.asList(replace, test));
         assertThat(MAPPER.readValue(fixture("fixtures/patchrequest.json"), PatchRequest.class))
                 .isEqualTo(request);

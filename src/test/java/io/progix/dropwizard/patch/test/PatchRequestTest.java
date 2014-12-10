@@ -2,9 +2,9 @@ package io.progix.dropwizard.patch.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.jackson.Jackson;
-import io.progix.dropwizard.patch.hooks.PatchInstruction;
-import io.progix.dropwizard.patch.hooks.PatchOperation;
-import io.progix.dropwizard.patch.hooks.PatchRequest;
+import io.progix.dropwizard.patch.explicit.PatchInstruction;
+import io.progix.dropwizard.patch.explicit.PatchOperation;
+import io.progix.dropwizard.patch.explicit.PatchRequest;
 import org.junit.Test;
 
 import static io.dropwizard.testing.FixtureHelpers.*;

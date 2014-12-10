@@ -1,4 +1,4 @@
-package io.progix.dropwizard.patch.hooks;
+package io.progix.dropwizard.patch.explicit;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

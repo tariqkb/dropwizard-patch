@@ -1,4 +1,4 @@
-package io.progix.dropwizard.patch.hooks;
+package io.progix.dropwizard.patch.explicit;
 
 import io.dropwizard.jersey.PATCH;
 

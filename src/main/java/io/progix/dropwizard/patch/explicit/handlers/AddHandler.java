@@ -1,9 +1,7 @@
-package io.progix.dropwizard.patch.hooks.handlers;
+package io.progix.dropwizard.patch.explicit.handlers;
 
-import io.progix.dropwizard.patch.hooks.JsonPatchValue;
-import io.progix.dropwizard.patch.hooks.JsonPath;
-
-import java.util.List;
+import io.progix.dropwizard.patch.explicit.JsonPatchValue;
+import io.progix.dropwizard.patch.explicit.JsonPath;
 
 /**
  * Serves the handler for the ADD operation. RFC5789 states 3 possible uses of the add operation. Only the case of

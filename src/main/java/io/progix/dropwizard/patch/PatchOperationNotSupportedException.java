@@ -3,7 +3,7 @@
  */
 package io.progix.dropwizard.patch;
 
-import io.progix.dropwizard.patch.hooks.PatchOperation;
+import io.progix.dropwizard.patch.explicit.PatchOperation;
 
 /**
  * This exception is thrown when a PATCH operation is implemented within a

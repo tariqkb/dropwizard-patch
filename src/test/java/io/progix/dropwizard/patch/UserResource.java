@@ -1,10 +1,10 @@
 package io.progix.dropwizard.patch;
 
 import io.dropwizard.jersey.PATCH;
-import io.progix.dropwizard.patch.hooks.JsonPatchValue;
-import io.progix.dropwizard.patch.hooks.JsonPath;
-import io.progix.dropwizard.patch.hooks.PatchRequest;
-import io.progix.dropwizard.patch.hooks.handlers.*;
+import io.progix.dropwizard.patch.explicit.JsonPatchValue;
+import io.progix.dropwizard.patch.explicit.JsonPath;
+import io.progix.dropwizard.patch.explicit.PatchRequest;
+import io.progix.dropwizard.patch.explicit.handlers.*;
 import org.apache.log4j.Logger;
 
 import javax.ws.rs.*;
@@ -57,18 +57,22 @@ public class UserResource {
                             int petIndex = path.element(1).val();
                             if (!path.property(2).exists()) {
                                 user.getPets().addAll(petIndex, value.to(Pet.class));
+                                return true;
                             }
                         } else {
                             user.getPets().addAll(value.to(Pet.class));
+                            return true;
                         }
                     } else if(path.property(0).is("name")) {
                         user.setName(value.one(String.class));
+                        return true;
                     } else if(path.property(0).is("emailAddresses")) {
                         if(path.element(1).exists()) {
                             user.getEmailAddresses().addAll(path.element(1).val(), value.to(String.class));
                         } else {
                             user.getEmailAddresses().addAll(value.to(String.class));
                         }
+                        return true;
                     }
                 }
                 return false;
@@ -78,6 +82,7 @@ public class UserResource {
         request.copy(new CopyHandler() {
             @Override
             public boolean copy(JsonPath from, JsonPath path) {
+
                 return false;
             }
         });

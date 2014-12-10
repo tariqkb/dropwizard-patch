@@ -1,10 +1,10 @@
-package io.progix.dropwizard.patch.hooks;
+package io.progix.dropwizard.patch.explicit;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.progix.dropwizard.patch.PatchOperationNotSupportedException;
-import io.progix.dropwizard.patch.hooks.handlers.*;
+import io.progix.dropwizard.patch.explicit.handlers.*;
 
 import java.util.List;
 

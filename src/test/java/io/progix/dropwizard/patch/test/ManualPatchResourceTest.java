@@ -5,8 +5,8 @@ import io.progix.dropwizard.patch.Pet;
 import io.progix.dropwizard.patch.User;
 import io.progix.dropwizard.patch.UserResource;
 import io.progix.dropwizard.patch.UserStore;
-import io.progix.dropwizard.patch.hooks.PatchInstruction;
-import io.progix.dropwizard.patch.hooks.PatchOperation;
+import io.progix.dropwizard.patch.explicit.PatchInstruction;
+import io.progix.dropwizard.patch.explicit.PatchOperation;
 import org.junit.Rule;
 import org.junit.Test;
 

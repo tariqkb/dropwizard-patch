@@ -1,4 +1,4 @@
-package io.progix.dropwizard.patch.hooks;
+package io.progix.dropwizard.patch.explicit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +8,8 @@ import java.util.List;
  */
 public class JsonPath {
 
-    private List<String> properties;
-    private List<Integer> elements;
+    private List<JsonPathProperty> properties;
+    private List<JsonPathElement> elements;
 
     public JsonPath(com.fasterxml.jackson.core.JsonPointer pointer) {
         this.properties = new ArrayList<>();
@@ -17,29 +17,33 @@ public class JsonPath {
 
         while (pointer != null) {
             if (pointer.mayMatchProperty()) {
-                properties.add(pointer.getMatchingProperty());
+                properties.add(new JsonPathProperty(pointer.getMatchingProperty()));
             } else {
-                properties.add(null);
+                properties.add(new JsonPathProperty());
             }
 
             if (pointer.mayMatchElement()) {
-                elements.add(pointer.getMatchingIndex());
+                elements.add(new JsonPathElement(pointer.getMatchingIndex()));
             } else {
-                elements.add(null);
+                elements.add(new JsonPathElement());
             }
             pointer = pointer.tail();
         }
     }
 
-    public List<String> getProperties() {
+    public List<JsonPathProperty> getProperties() {
         return properties;
     }
 
-    public String property(int index) {
+    public List<JsonPathElement> getElements() {
+        return elements;
+    }
+
+    public JsonPathProperty property(int index) {
         return properties.get(index);
     }
 
-    public Integer element(int index) {
+    public JsonPathElement element(int index) {
         return elements.get(index);
     }
 }

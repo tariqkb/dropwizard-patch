@@ -4,5 +4,5 @@ import io.progix.dropwizard.patch.explicit.JsonPath;
 
 public interface MoveHandler {
 
-    public boolean move(JsonPath from, JsonPath path);
+    public void move(JsonPath from, JsonPath path);
 }

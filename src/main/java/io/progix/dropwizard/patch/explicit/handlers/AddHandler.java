@@ -11,6 +11,6 @@ import io.progix.dropwizard.patch.explicit.JsonPath;
  */
 public interface AddHandler {
 
-    public boolean add(JsonPath path, JsonPatchValue values);
+    public void add(JsonPath path, JsonPatchValue values);
 
 }

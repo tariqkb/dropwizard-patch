@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.progix.dropwizard.patch.PatchOperationNotSupportedException;
+import io.progix.dropwizard.patch.PatchTestFailedException;
 import io.progix.dropwizard.patch.explicit.handlers.*;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class PatchRequest {
         return instructions;
     }
 
-    public void apply() {
+    public void apply() throws PatchTestFailedException {
         for (PatchInstruction instruction : instructions) {
             JsonPath path = new JsonPath(JsonPointer.compile(instruction.getPath()));
 
@@ -86,7 +87,11 @@ public class PatchRequest {
                         throw new PatchOperationNotSupportedException(PatchOperation.TEST);
                     }
 
-                    testHandler.test(path, new JsonPatchValue(instruction.getValue()));
+                    boolean success = testHandler.test(path, new JsonPatchValue(instruction.getValue()));
+
+                    if(!success) {
+                        throw new PatchTestFailedException(path, instruction.getValue());
+                    }
                     break;
                 default:
                     break;

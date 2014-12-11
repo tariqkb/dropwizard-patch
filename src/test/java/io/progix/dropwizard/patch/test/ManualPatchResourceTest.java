@@ -1,5 +1,6 @@
 package io.progix.dropwizard.patch.test;
 
+import com.sun.jersey.api.client.ClientResponse;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import io.progix.dropwizard.patch.Pet;
 import io.progix.dropwizard.patch.User;
@@ -49,7 +50,7 @@ public class ManualPatchResourceTest {
 
         User user = new User(0, "Tariq", new ArrayList<>(Arrays.asList("tariq@progix.io")), new ArrayList<>(
                 Arrays.asList(new Pet(0, 2, new ArrayList<>(Arrays.asList("Larry, Mogget"))),
-                        new Pet(0, 2, new ArrayList<>(Arrays.asList("Larry, Mogget"))));
+                        new Pet(0, 2, new ArrayList<>(Arrays.asList("Larry, Mogget"))))));
         assertThat(dao.getUsers().get(0)).isEqualTo(user);
 
     }
@@ -62,10 +63,9 @@ public class ManualPatchResourceTest {
                 .method("PATCH", Arrays.asList(movePetInstruction));
 
         User user = new User(1, "Alli", new ArrayList<>(Arrays.asList("alli@beeb.com")), new ArrayList<>(
-                Arrays.asList(new Pet(0, 2, new ArrayList<>(Arrays.asList("Larry, Mogget"))),
-                        new Pet(1, 9, new ArrayList<>(Arrays.asList("Jonathan"))))));
-        assertThat(dao.getUsers().get(0)).isEqualTo(user);
-
+                Arrays.asList(new Pet(1, 9, new ArrayList<>(Arrays.asList("Jonathan"))), new Pet(0, 2, new ArrayList<>(Arrays.asList("Larry, Mogget")))
+                )));
+        assertThat(dao.getUsers().get(1)).isEqualTo(user);
     }
 
     @Test
@@ -97,14 +97,13 @@ public class ManualPatchResourceTest {
                 .method("PATCH", Arrays.asList(replacePetInstruction, replaceNameInstruction, replaceEmailInstruction));
 
         User user = new User(1, "Allison", new ArrayList<>(Arrays.asList("allison@beeb.org")),
-                new ArrayList<>(Arrays.asList(new ArrayList<>(Arrays.asList(cat, bird)));
-        assertThat(dao.getUsers().get(0)).isEqualTo(user);
+                new ArrayList<>(Arrays.asList(cat, bird)));
+        assertThat(dao.getUsers().get(1)).isEqualTo(user);
 
     }
 
     @Test
-    public void testManualReplace() {
-        Pet cat = new Pet(0, 2, new ArrayList<>(Arrays.asList("Larry, Mogget")));
+    public void testManualTest() {
         Pet dog = new Pet(1, 9, new ArrayList<>(Arrays.asList("Jonathan")));
 
         PatchInstruction testPetInstruction = new PatchInstruction(PatchOperation.TEST, "/pets/1",
@@ -117,9 +116,17 @@ public class ManualPatchResourceTest {
         resources.client().resource("/users/1").type(MediaType.APPLICATION_JSON)
                 .method("PATCH", Arrays.asList(testPetInstruction, testNameInstruction, testEmailInstruction));
 
-        User user = new User(1, "Allison", new ArrayList<>(Arrays.asList("allison@beeb.org")),
-                new ArrayList<>(Arrays.asList(new ArrayList<>(Arrays.asList(cat, bird)));
-        assertThat(dao.getUsers().get(0)).isEqualTo(user);
+    }
+
+    @Test
+    public void testManualTestFailure() {
+        PatchInstruction testNameInstruction = new PatchInstruction(PatchOperation.TEST, "/name",
+                new ArrayList<Object>(Arrays.asList("Allison")), "");
+
+        ClientResponse response = resources.client().resource("/users/1").type(MediaType.APPLICATION_JSON)
+                .method("PATCH", ClientResponse.class, Arrays.asList(testNameInstruction));
+
+        assertThat(response.getStatus()).isEqualTo(422);
 
     }
 }

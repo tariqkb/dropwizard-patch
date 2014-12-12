@@ -12,7 +12,7 @@ public class JsonPatchValue {
         this.values = values;
     }
 
-    public <T> List<T> to(Class<T> clazz) {
+    public <T> List<T> many(Class<T> clazz) {
         List<T> mappedValues = new ArrayList<>();
         for(Object o : values) {
             if(o == null) {

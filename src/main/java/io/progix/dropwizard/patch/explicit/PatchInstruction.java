@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * Object representing single operation within a PATCH document as defined in
- * RFC 6902. Uses a custom deserializer to map arbitrary object values within the value property as defined by {@link
+ * RFC 6902. Uses a custom deserializer many map arbitrary object values within the value property as defined by {@link
  * com.fasterxml.jackson.databind.deser.std.UntypedObjectDeserializer}
  *
  * @author Tariq Bugrara

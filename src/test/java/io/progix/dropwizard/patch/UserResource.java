@@ -57,12 +57,12 @@ public class UserResource {
                         if (path.element(1).exists() && path.endsAt(1)) {
                             int petIndex = path.element(1).val();
                             if (!path.property(2).exists()) {
-                                user.getPets().addAll(petIndex, value.to(Pet.class));
+                                user.getPets().addAll(petIndex, value.many(Pet.class));
                             } else {
                                 throw new InvalidPatchPathException(path);
                             }
                         } else if (path.endsAt(0)) {
-                            user.getPets().addAll(value.to(Pet.class));
+                            user.getPets().addAll(value.many(Pet.class));
                         } else {
                             throw new InvalidPatchPathException(path);
                         }
@@ -70,9 +70,9 @@ public class UserResource {
                         user.setName(value.one(String.class));
                     } else if (path.property(0).is("emailAddresses")) {
                         if (path.element(1).exists() && path.endsAt(1)) {
-                            user.getEmailAddresses().addAll(path.element(1).val(), value.to(String.class));
+                            user.getEmailAddresses().addAll(path.element(1).val(), value.many(String.class));
                         } else if (path.endsAt(0)) {
-                            user.getEmailAddresses().addAll(value.to(String.class));
+                            user.getEmailAddresses().addAll(value.many(String.class));
                         } else {
                             throw new InvalidPatchPathException(path);
                         }
@@ -159,7 +159,7 @@ public class UserResource {
                             int petIndex = path.element(1).val();
                             user.getPets().set(petIndex, value.one(Pet.class));
                         } else if (path.endsAt(0)) {
-                            user.setPets(value.to(Pet.class));
+                            user.setPets(value.many(Pet.class));
                         } else {
                             throw new InvalidPatchPathException(path);
                         }
@@ -169,7 +169,7 @@ public class UserResource {
                         if (path.element(1).exists() && path.endsAt(1)) {
                             user.getEmailAddresses().set(path.element(1).val(), value.one(String.class));
                         } else if (path.endsAt(0)) {
-                            user.setEmailAddresses(value.to(String.class));
+                            user.setEmailAddresses(value.many(String.class));
                         } else {
                             throw new InvalidPatchPathException(path);
                         }
@@ -191,7 +191,7 @@ public class UserResource {
                             int petIndex = path.element(1).val();
                             return Objects.equals(user.getPets().get(petIndex), value.one(Pet.class));
                         } else if (path.endsAt(0)) {
-                            return Objects.equals(user.getPets(), value.to(Pet.class));
+                            return Objects.equals(user.getPets(), value.many(Pet.class));
                         }
                     } else if (path.property(0).is("name") && path.endsAt(0)) {
                         return Objects.equals(user.getName(), value.one(String.class));
@@ -199,7 +199,7 @@ public class UserResource {
                         if (path.element(1).exists() && path.endsAt(1)) {
                             return Objects.equals(user.getEmailAddresses().get(path.element(1).val()), value.one(String.class));
                         } else if (path.endsAt(0)) {
-                            return Objects.equals(user.getEmailAddresses(), value.to(String.class));
+                            return Objects.equals(user.getEmailAddresses(), value.many(String.class));
                         }
                     }
                 }

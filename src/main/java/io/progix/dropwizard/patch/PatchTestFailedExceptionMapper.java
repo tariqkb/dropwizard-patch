@@ -7,7 +7,7 @@ public class PatchTestFailedExceptionMapper implements ExceptionMapper<PatchTest
 
     @Override
     public Response toResponse(PatchTestFailedException exception) {
-        return Response.status(400).entity(exception.getMessage()).build();
+        return Response.status(412).entity(exception.getMessage()).build();
     }
 
 }

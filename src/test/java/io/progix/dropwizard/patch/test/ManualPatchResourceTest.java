@@ -2,10 +2,7 @@ package io.progix.dropwizard.patch.test;
 
 import com.sun.jersey.api.client.ClientResponse;
 import io.dropwizard.testing.junit.ResourceTestRule;
-import io.progix.dropwizard.patch.Pet;
-import io.progix.dropwizard.patch.User;
-import io.progix.dropwizard.patch.UserResource;
-import io.progix.dropwizard.patch.UserStore;
+import io.progix.dropwizard.patch.*;
 import io.progix.dropwizard.patch.explicit.PatchInstruction;
 import io.progix.dropwizard.patch.explicit.PatchOperation;
 import org.junit.Rule;
@@ -23,7 +20,8 @@ public class ManualPatchResourceTest {
     private UserStore dao = new UserStore();
 
     @Rule
-    public ResourceTestRule resources = ResourceTestRule.builder().addResource(new UserResource(dao)).build();
+    public ResourceTestRule resources = ResourceTestRule.builder().addProvider(PatchTestFailedExceptionMapper.class).
+            addResource(new UserResource(dao)).build();
 
     @Test
     public void testManualAdd() {
@@ -63,8 +61,8 @@ public class ManualPatchResourceTest {
                 .method("PATCH", Arrays.asList(movePetInstruction));
 
         User user = new User(1, "Alli", new ArrayList<>(Arrays.asList("alli@beeb.com")), new ArrayList<>(
-                Arrays.asList(new Pet(1, 9, new ArrayList<>(Arrays.asList("Jonathan"))), new Pet(0, 2, new ArrayList<>(Arrays.asList("Larry, Mogget")))
-                )));
+                Arrays.asList(new Pet(1, 9, new ArrayList<>(Arrays.asList("Jonathan"))),
+                        new Pet(0, 2, new ArrayList<>(Arrays.asList("Larry, Mogget"))))));
         assertThat(dao.getUsers().get(1)).isEqualTo(user);
     }
 
@@ -126,7 +124,7 @@ public class ManualPatchResourceTest {
         ClientResponse response = resources.client().resource("/users/1").type(MediaType.APPLICATION_JSON)
                 .method("PATCH", ClientResponse.class, Arrays.asList(testNameInstruction));
 
-        assertThat(response.getStatus()).isEqualTo(422);
+        assertThat(response.getStatus()).isEqualTo(412);
 
     }
 }

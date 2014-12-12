@@ -13,9 +13,9 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Custom Jackson deserializer for PATCH operations in a PATCH document.
+ * Custom Jackson deserializer for patch operations in a patch document.
  *
- * @author Tariq Bugrara
+ * @see com.fasterxml.jackson.databind.JsonDeserializer
  */
 public class PatchInstructionDeserializer extends JsonDeserializer<PatchInstruction> {
 
@@ -25,9 +25,17 @@ public class PatchInstructionDeserializer extends JsonDeserializer<PatchInstruct
         untypedObjectDeserializer = new UntypedObjectDeserializer();
     }
 
+    /**
+     * This method is responsible for deserialization of a {@link io.progix.dropwizard.patch.explicit.PatchInstruction}
+     * <p/>
+     * The value in a patch instruction is mapped to a TreeMap and can be later converted to a class of choice using
+     * {@link io.progix.dropwizard.patch.explicit.JsonPatchValue}
+     *
+     * @see com.fasterxml.jackson.databind.JsonDeserializer
+     */
     @Override
     public PatchInstruction deserialize(JsonParser jp,
-            DeserializationContext ctxt) throws IOException, JsonProcessingException {
+                                        DeserializationContext ctxt) throws IOException, JsonProcessingException {
         untypedObjectDeserializer.resolve(ctxt);
 
         JsonNode node = jp.getCodec().readTree(jp);
@@ -51,7 +59,7 @@ public class PatchInstructionDeserializer extends JsonDeserializer<PatchInstruct
                 while (iterator.hasNext()) {
                     JsonNode elementNode = iterator.next();
                     JsonParser p = elementNode.traverse();
-                    if(!p.hasCurrentToken()) {
+                    if (!p.hasCurrentToken()) {
                         p.nextToken();
                     }
                     Object element = untypedObjectDeserializer.deserialize(p, ctxt);
@@ -59,7 +67,7 @@ public class PatchInstructionDeserializer extends JsonDeserializer<PatchInstruct
                 }
             } else {
                 JsonParser p = valueNode.traverse();
-                if(!p.hasCurrentToken()) {
+                if (!p.hasCurrentToken()) {
                     p.nextToken();
                 }
                 Object value = untypedObjectDeserializer.deserialize(p, ctxt);

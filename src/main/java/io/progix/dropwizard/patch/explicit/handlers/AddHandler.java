@@ -4,13 +4,21 @@ import io.progix.dropwizard.patch.explicit.JsonPatchValue;
 import io.progix.dropwizard.patch.explicit.JsonPath;
 
 /**
- * Serves the handler for the ADD operation. RFC5789 states 3 possible uses of the add operation. Only the case of
- * adding/putting an element within a collection is implemented
- * here because one use mimics the replace operation and the other adds properties many resources which is not possible
- * in Java.
+ * A handler to contain logic for the patch operation ADD used in the explicit mode of patching.
+ * <p/>
+ * This handler can be registered to a {@link io.progix.dropwizard.patch.explicit.PatchRequest} in a resource.
+ * <p/>
+ * For more information on what the ADD patch operation should do, reference RFC6902.
  */
 public interface AddHandler {
 
-    public void add(JsonPath path, JsonPatchValue values);
+    /**
+     * Method to contain logic on how a ADD operation should be preformed for a resource. An {@link io.progix
+     * .dropwizard.patch.InvalidPatchPathException} should be thrown if the path given is not matched.
+     *
+     * @param path  The {@link io.progix.dropwizard.patch.explicit.JsonPath} for the location the value should be added.
+     * @param value the {@link io.progix.dropwizard.patch.explicit.JsonPatchValue} for the value to be added.
+     */
+    public void add(JsonPath path, JsonPatchValue value);
 
 }

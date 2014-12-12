@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Wrapper class for Jackson's com.fasterxml.jackson.core.JsonPath
+ * Wrapper class for Jackson's com.fasterxml.jackson.core.JsonPath. Created to be more user-friendly for this specific
+ * use case.
  */
 public class JsonPath {
 
@@ -20,6 +21,10 @@ public class JsonPath {
         while (pointer != null) {
             if (pointer.mayMatchProperty() && !pointer.getMatchingProperty().isEmpty()) {
                 properties.add(new JsonPathProperty(pointer.getMatchingProperty()));
+                this.pathString += pointer.getMatchingProperty() + "/";
+            } else if (pointer.getMatchingProperty().equals("-")) {
+                /* This character represents the last element in an array */
+                elements.add(new JsonPathElement(true));
                 this.pathString += pointer.getMatchingProperty() + "/";
             } else {
                 properties.add(new JsonPathProperty());

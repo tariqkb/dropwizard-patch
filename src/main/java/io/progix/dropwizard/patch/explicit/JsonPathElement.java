@@ -47,9 +47,11 @@ public class JsonPathElement {
     /**
      * This usually isn't needed. Use {@link JsonPathElement#is(int)} to check if this property matches an Integer
      *
-     * @return the integer value for this element. Returns null if this is an empty element
+     * @return the integer value for this element.
+     * @throws java.lang.NullPointerException if this element is empty. Always use {@link JsonPathElement#exists()}
+     *                                        before this method
      */
-    public Integer val() {
+    public int val() {
         return value;
     }
 

@@ -7,10 +7,11 @@ import java.util.List;
 
 /**
  * Wrapper class for values passed in as the value key in a JSON Patch document as outlined in RFC6902.
- *
+ * <p/>
  * This class uses Jackson to map the JSON objects from the patch document into expected classes
  */
 public class JsonPatchValue {
+
     private List<? extends Object> values;
 
     /**

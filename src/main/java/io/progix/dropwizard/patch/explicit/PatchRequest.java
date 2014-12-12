@@ -91,8 +91,7 @@ public class PatchRequest {
                         throw new PatchOperationNotSupportedException(PatchOperation.MOVE);
                     }
 
-                    moveHandler.move(new JsonPath(JsonPointer.compile(instruction.getFrom())),
-                            path);
+                    moveHandler.move(new JsonPath(JsonPointer.compile(instruction.getFrom())), path);
                     break;
                 case REMOVE:
                     if (removeHandler == null) {

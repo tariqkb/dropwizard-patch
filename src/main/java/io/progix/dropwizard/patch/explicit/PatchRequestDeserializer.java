@@ -20,7 +20,7 @@ public class PatchRequestDeserializer extends JsonDeserializer<PatchRequest> {
 
     @Override
     public PatchRequest deserialize(JsonParser jp,
-                                    DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            DeserializationContext ctxt) throws IOException, JsonProcessingException {
         ObjectMapper mapper = Jackson.newObjectMapper();
         PatchInstruction[] instructions = mapper.readValue(jp, PatchInstruction[].class);
         return new PatchRequest(Arrays.asList(instructions));

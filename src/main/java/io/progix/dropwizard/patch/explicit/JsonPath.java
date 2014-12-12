@@ -22,10 +22,12 @@ public class JsonPath {
      * creating {@link io.progix.dropwizard.patch.explicit.JsonPathProperty} and {@link
      * io.progix.dropwizard.patch.explicit.JsonPathElement} for each segment.
      * <p/>
-     * If a given segment does not match as a String property, an empty {@link io.progix.dropwizard.patch.explicit.JsonPathProperty}
+     * If a given segment does not match as a String property, an empty {@link io.progix.dropwizard.patch.explicit
+     * .JsonPathProperty}
      * is created.
      * <p/>
-     * If a given segment does not match as a Integer index, an empty {@link io.progix.dropwizard.patch.explicit.JsonPathElement}
+     * If a given segment does not match as a Integer index, an empty {@link io.progix.dropwizard.patch.explicit
+     * .JsonPathElement}
      * is created.
      *
      * @param pointer
@@ -78,30 +80,6 @@ public class JsonPath {
     }
 
     /**
-     * This method will never return null. If trying to access a {@link io.progix.dropwizard.patch.explicit.JsonPathProperty}
-     * for a segment that is not a String property, will return a special object who's {@link JsonPathProperty#exists()}
-     * will return false
-     *
-     * @param index the segment index to retrieve
-     * @return a {@link io.progix.dropwizard.patch.explicit.JsonPathProperty} for this index
-     */
-    public JsonPathProperty property(int index) {
-        return properties.get(index);
-    }
-
-    /**
-     * This method will never return null. If trying to access a {@link io.progix.dropwizard.patch.explicit.JsonPathElement}
-     * for a segment that is not an Integer property, will return a special object who's {@link
-     * JsonPathElement#exists()} will return false
-     *
-     * @param index the segment index to retrieve
-     * @return a {@link io.progix.dropwizard.patch.explicit.JsonPathElement} for this index
-     */
-    public JsonPathElement element(int index) {
-        return elements.get(index);
-    }
-
-    /**
      * This method can be used to determine when an {@link io.progix.dropwizard.patch.InvalidPatchPathException} should
      * be thrown. Uses this exception and method provides useful information for the client when trying to patch a
      * resource in a way the server does not support
@@ -114,6 +92,32 @@ public class JsonPath {
     public boolean endsAt(int index) {
         index++;
         return !property(index).exists() && !element(index).exists();
+    }
+
+    /**
+     * This method will never return null. If trying to access a {@link io.progix.dropwizard.patch.explicit
+     * .JsonPathProperty}
+     * for a segment that is not a String property, will return a special object who's {@link JsonPathProperty#exists()}
+     * will return false
+     *
+     * @param index the segment index to retrieve
+     * @return a {@link io.progix.dropwizard.patch.explicit.JsonPathProperty} for this index
+     */
+    public JsonPathProperty property(int index) {
+        return properties.get(index);
+    }
+
+    /**
+     * This method will never return null. If trying to access a {@link io.progix.dropwizard.patch.explicit
+     * .JsonPathElement}
+     * for a segment that is not an Integer property, will return a special object who's {@link
+     * JsonPathElement#exists()} will return false
+     *
+     * @param index the segment index to retrieve
+     * @return a {@link io.progix.dropwizard.patch.explicit.JsonPathElement} for this index
+     */
+    public JsonPathElement element(int index) {
+        return elements.get(index);
     }
 
     @Override

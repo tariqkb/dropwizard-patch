@@ -19,19 +19,19 @@ public class JsonPathElement {
     }
 
     /**
+     * Constructs an empty element to signify this segment is not an integer index
+     */
+    public JsonPathElement() {
+        this(false);
+    }
+
+    /**
      * @param endOfArray true if this segment is the special character '-' that signifies the end of an array. false if
      *                   an empty element
      */
     public JsonPathElement(boolean endOfArray) {
         this.value = null;
         this.endOfArray = endOfArray;
-    }
-
-    /**
-     * Constructs an empty element to signify this segment is not an integer index
-     */
-    public JsonPathElement() {
-        this(false);
     }
 
     /**

@@ -95,7 +95,8 @@ public class UserResource {
                     } else {
                         throw new InvalidPatchPathException(path);
                     }
-                } else if (from.property(0).is("emailAddresses") && path.property(0).is("emailAddresses") && from.endsAt(1) && path.endsAt(1)) {
+                } else if (from.property(0).is("emailAddresses") && path.property(0).is("emailAddresses") && from
+                        .endsAt(1) && path.endsAt(1)) {
                     if (from.element(1).exists() && path.element(1).exists()) {
                         String emailAddress = user.getEmailAddresses().get(from.element(1).val());
                         user.getEmailAddresses().add(path.element(1).val(), emailAddress);
@@ -121,7 +122,8 @@ public class UserResource {
                     } else {
                         throw new InvalidPatchPathException(path);
                     }
-                } else if (from.property(0).is("emailAddresses") && path.property(0).is("emailAddresses") && from.endsAt(1) && path.endsAt(1)) {
+                } else if (from.property(0).is("emailAddresses") && path.property(0).is("emailAddresses") && from
+                        .endsAt(1) && path.endsAt(1)) {
                     if (from.element(1).exists() && path.element(1).exists()) {
                         int fromIndex = from.element(1).val();
                         String emailAddress = user.getEmailAddresses().get(fromIndex);
@@ -197,7 +199,8 @@ public class UserResource {
                         return Objects.equals(user.getName(), value.one(String.class));
                     } else if (path.property(0).is("emailAddresses")) {
                         if (path.element(1).exists() && path.endsAt(1)) {
-                            return Objects.equals(user.getEmailAddresses().get(path.element(1).val()), value.one(String.class));
+                            return Objects.equals(user.getEmailAddresses().get(path.element(1).val()),
+                                    value.one(String.class));
                         } else if (path.endsAt(0)) {
                             return Objects.equals(user.getEmailAddresses(), value.many(String.class));
                         }

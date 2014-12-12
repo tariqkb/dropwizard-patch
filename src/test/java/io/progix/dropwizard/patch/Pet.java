@@ -3,6 +3,7 @@ package io.progix.dropwizard.patch;
 import java.util.List;
 
 public class Pet {
+
     private long id;
     private int age;
     private List<String> nicknames;
@@ -21,20 +22,20 @@ public class Pet {
         return id;
     }
 
-    public int getAge() {
-        return age;
-    }
-
-    public List<String> getNicknames() {
-        return nicknames;
-    }
-
     public void setId(long id) {
         this.id = id;
     }
 
+    public int getAge() {
+        return age;
+    }
+
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public List<String> getNicknames() {
+        return nicknames;
     }
 
     public void setNicknames(List<String> nicknames) {
@@ -43,14 +44,19 @@ public class Pet {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         Pet pet = (Pet) o;
 
-        if (age != pet.age) return false;
-        if (id != pet.id) return false;
-        if (!nicknames.equals(pet.nicknames)) return false;
+        if (age != pet.age)
+            return false;
+        if (id != pet.id)
+            return false;
+        if (!nicknames.equals(pet.nicknames))
+            return false;
 
         return true;
     }

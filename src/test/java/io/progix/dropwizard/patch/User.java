@@ -3,6 +3,7 @@ package io.progix.dropwizard.patch;
 import java.util.List;
 
 public class User {
+
     private long id;
     private String name;
     private List<String> emailAddresses;
@@ -19,28 +20,28 @@ public class User {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public List<String> getEmailAddresses() {
-        return emailAddresses;
-    }
-
-    public List<Pet> getPets() {
-        return pets;
-    }
-
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
+    public List<String> getEmailAddresses() {
+        return emailAddresses;
+    }
+
     public void setEmailAddresses(List<String> emailAddresses) {
         this.emailAddresses = emailAddresses;
+    }
+
+    public List<Pet> getPets() {
+        return pets;
     }
 
     public void setPets(List<Pet> pets) {
@@ -49,15 +50,21 @@ public class User {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         User user = (User) o;
 
-        if (id != user.id) return false;
-        if (!emailAddresses.equals(user.emailAddresses)) return false;
-        if (!name.equals(user.name)) return false;
-        if (!pets.equals(user.pets)) return false;
+        if (id != user.id)
+            return false;
+        if (!emailAddresses.equals(user.emailAddresses))
+            return false;
+        if (!name.equals(user.name))
+            return false;
+        if (!pets.equals(user.pets))
+            return false;
 
         return true;
     }

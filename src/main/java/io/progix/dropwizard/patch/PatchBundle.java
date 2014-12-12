@@ -6,12 +6,12 @@ import io.dropwizard.setup.Environment;
 
 public class PatchBundle implements Bundle {
 
-	public void initialize(Bootstrap<?> bootstrap) {
+    public void initialize(Bootstrap<?> bootstrap) {
 
-	}
+    }
 
-	public void run(Environment environment) {
+    public void run(Environment environment) {
 
-	}
+    }
 
 }

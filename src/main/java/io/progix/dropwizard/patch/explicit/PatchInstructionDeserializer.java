@@ -35,7 +35,7 @@ public class PatchInstructionDeserializer extends JsonDeserializer<PatchInstruct
      */
     @Override
     public PatchInstruction deserialize(JsonParser jp,
-                                        DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            DeserializationContext ctxt) throws IOException, JsonProcessingException {
         untypedObjectDeserializer.resolve(ctxt);
 
         JsonNode node = jp.getCodec().readTree(jp);

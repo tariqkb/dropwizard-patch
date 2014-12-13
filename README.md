@@ -3,8 +3,8 @@ Dropwizard Patch Implementation
 
 About
 -----
-This small framework provides an implementation for HTTP Patch for resources in [Dropwizard](dropwizard.github
-.io). This implementation is based off of [RFC6902](https://tools.ietf.org/html/rfc6902), a proposed standard for
+This small framework provides an implementation for HTTP Patch for resources in [Dropwizard](http://dropwizard.io).
+This  implementation is based off of [RFC6902](https://tools.ietf.org/html/rfc6902), a proposed standard for
 updating resources. Currently, only an explicit mode of patching is supported by this implementation. A more implicit
 mode of patching is in the works that doesn't require as much code to update a resource.
 
@@ -91,6 +91,9 @@ In this example, the `PatchRequest#add()` method is used to set an `AddHandler`,
 `add` operation. For each patch instruction in this request, the code inside the `AddHandler` will execute.
 
 The `PatchRequest` also has methods for all other operations listed above, exposing the relevant information.
+
+Note that `PatchRequest#apply()` is required to be called before the resource method returns for any patching
+to be preformed!
 
 ###JsonPath
 `JsonPath` instances contain path information as defined in [RFC6901](https://tools.ietf.org/html/rfc6901) and wrap
@@ -188,3 +191,6 @@ FAQ
 The boolean determines if the test fails or succeeds. If the test fails, a `PatchTestFailedException` is
 automatically thrown. Note that you should not return false if the `JsonPath` is invalid, see [Invalid paths]
 (#invalid-paths).
+
+###I'm using the PatchRequest in my resource, but nothing happens after a call is made?
+Make sure you call `PatchRequest#apply() before you return within the resource.

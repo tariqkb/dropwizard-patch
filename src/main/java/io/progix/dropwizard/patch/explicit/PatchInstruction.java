@@ -99,4 +99,14 @@ public class PatchInstruction {
         result = 31 * result + (from != null ? from.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "PatchInstruction{" +
+                "operation=" + operation +
+                ", path='" + path + '\'' +
+                ", value=" + value +
+                ", from='" + from + '\'' +
+                '}';
+    }
 }

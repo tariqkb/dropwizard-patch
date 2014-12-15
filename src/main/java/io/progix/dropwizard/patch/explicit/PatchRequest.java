@@ -208,4 +208,11 @@ public class PatchRequest {
     public int hashCode() {
         return instructions.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "PatchRequest{" +
+                "instructions=" + instructions +
+                '}';
+    }
 }

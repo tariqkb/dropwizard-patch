@@ -1,4 +1,74 @@
 [
-  { "op": "replace", "path": "/a/b/c", "value": 42 },
-  { "op": "test", "path": "/a/b/c", "value": ["C", "D"] }
+  { "op": "replace", "path": "/a/c", "value": "1" },
+  { "op": "replace", "path": "/a/c", "value": 3 },
+  { "op": "replace", "path": "/a/c", "value": ["1", "2"] },
+  { "op": "replace", "path": "/a/c", "value": [3, 4] },
+
+  { "op": "replace", "path": "/a/0", "value": "1" },
+  { "op": "replace", "path": "/a/0", "value": 3 },
+  { "op": "replace", "path": "/a/0", "value": ["1", "2"] },
+  { "op": "replace", "path": "/a/0", "value": [3, 4] },
+
+  { "op": "replace", "path": "/a/-", "value": "1" },
+  { "op": "replace", "path": "/a/-", "value": 3 },
+  { "op": "replace", "path": "/a/-", "value": ["1", "2"] },
+  { "op": "replace", "path": "/a/-", "value": [3, 4] },
+
+  { "op": "add", "path": "/a/c", "value": "1" },
+  { "op": "add", "path": "/a/c", "value": 3 },
+  { "op": "add", "path": "/a/c", "value": ["1", "2"] },
+  { "op": "add", "path": "/a/c", "value": [3, 4] },
+
+  { "op": "add", "path": "/a/0", "value": "1" },
+  { "op": "add", "path": "/a/0", "value": 3 },
+  { "op": "add", "path": "/a/0", "value": ["1", "2"] },
+  { "op": "add", "path": "/a/0", "value": [3, 4] },
+
+  { "op": "add", "path": "/a/-", "value": "1" },
+  { "op": "add", "path": "/a/-", "value": 3 },
+  { "op": "add", "path": "/a/-", "value": ["1", "2"] },
+  { "op": "add", "path": "/a/-", "value": [3, 4] },
+
+  { "op": "test", "path": "/a/c", "value": "1" },
+  { "op": "test", "path": "/a/c", "value": 3 },
+  { "op": "test", "path": "/a/c", "value": ["1", "2"] },
+  { "op": "test", "path": "/a/c", "value": [3, 4] },
+
+  { "op": "test", "path": "/a/0", "value": "1" },
+  { "op": "test", "path": "/a/0", "value": 3 },
+  { "op": "test", "path": "/a/0", "value": ["1", "2"] },
+  { "op": "test", "path": "/a/0", "value": [3, 4] },
+
+  { "op": "test", "path": "/a/-", "value": "1" },
+  { "op": "test", "path": "/a/-", "value": 3 },
+  { "op": "test", "path": "/a/-", "value": ["1", "2"] },
+  { "op": "test", "path": "/a/-", "value": [3, 4] },
+
+  { "op": "move", "path": "/a/c", "from": "/a/d" },
+  { "op": "move", "path": "/a/c", "from": "/a/d/0" },
+  { "op": "move", "path": "/a/c", "from": "/a/d/-" },
+
+  { "op": "move", "path": "/a/0", "from": "/a/d" },
+  { "op": "move", "path": "/a/0", "from": "/a/d/0" },
+  { "op": "move", "path": "/a/0", "from": "/a/d/-" },
+
+  { "op": "move", "path": "/a/-", "from": "/a/d" },
+  { "op": "move", "path": "/a/-", "from": "/a/d/0" },
+  { "op": "move", "path": "/a/-", "from": "/a/d/-" },
+
+  { "op": "copy", "path": "/a/c", "from": "/a/d" },
+  { "op": "copy", "path": "/a/c", "from": "/a/d/0" },
+  { "op": "copy", "path": "/a/c", "from": "/a/d/-" },
+
+  { "op": "copy", "path": "/a/0", "from": "/a/d" },
+  { "op": "copy", "path": "/a/0", "from": "/a/d/0" },
+  { "op": "copy", "path": "/a/0", "from": "/a/d/-" },
+
+  { "op": "copy", "path": "/a/-", "from": "/a/d" },
+  { "op": "copy", "path": "/a/-", "from": "/a/d/0" },
+  { "op": "copy", "path": "/a/-", "from": "/a/d/-" },
+
+  { "op": "remove", "path": "/a/c" },
+  { "op": "remove", "path": "/a/0" },
+  { "op": "remove", "path": "/a/-" }
 ]

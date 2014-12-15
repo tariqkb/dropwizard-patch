@@ -1,0 +1,10 @@
+[
+  { "op": "add", "path": "/pets/1", "value": {"id": 2, "age": 1, "nicknames": ["Rodenty"]} },
+  { "op": "add", "path": "/name", "value": "Allison" },
+  { "op": "replace", "path": "/emailAddresses/0", "value": "allison@boop.org" },
+  { "op": "replace", "path": "/name", "value": "Alli" },
+  { "op": "test", "path": "/a/b/c", "value": ["C", "D"] },
+  { "op": "move", "path": "/a/b", "from": "/a/d" },
+  { "op": "remove", "path": "/a/b/c" },
+  { "op": "copy", "path": "/a/b/c", "from": "/a/d" }
+]

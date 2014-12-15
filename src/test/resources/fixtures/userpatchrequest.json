@@ -3,8 +3,8 @@
   { "op": "add", "path": "/name", "value": "Allison" },
   { "op": "replace", "path": "/emailAddresses/0", "value": "allison@boop.org" },
   { "op": "replace", "path": "/name", "value": "Alli" },
-  { "op": "test", "path": "/a/b/c", "value": ["C", "D"] },
-  { "op": "move", "path": "/a/b", "from": "/a/d" },
-  { "op": "remove", "path": "/a/b/c" },
-  { "op": "copy", "path": "/a/b/c", "from": "/a/d" }
+  { "op": "test", "path": "/emailAddresses/1", "value": "allison@boop.org" },
+  { "op": "move", "path": "/pets/1", "from": "/pets/0" },
+  { "op": "remove", "path": "/pet/1" },
+  { "op": "copy", "path": "/pets/1", "from": "pets/0" }
 ]

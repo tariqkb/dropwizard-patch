@@ -1,9 +1,7 @@
 apply plugin: 'java'
-apply plugin:'application'
+apply plugin: 'maven-publish'
 
-sourceCompatibility = 1.7
-version = '0.0.1'
-mainClassName = "io.progix.dropwizard.patch.example.App"
+version = '0.1.0';
 
 repositories {
     mavenCentral()
@@ -19,5 +17,35 @@ dependencies {
 test {
     filter {
         includeTestsMatching "io.progix.dropwizard.patch.test.*"
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId 'io.progix.dropwizard'
+            artifactId 'dropwizard-patch'
+            version '0.1.0'
+
+            from components.java
+
+            pom.withXml {
+                asNode().appendNode('name', 'Dropwizard Patch')
+                asNode().appendNode('description',
+                        'An implementation of the HTTP method PATCH using RFC6902 for the Dropwizard framework.')
+                asNode().appendNode('url', 'https://github.com/tbugrara/dropwizard-patch')
+
+                asNode().appendNode('licenses') {
+
+                }
+
+            }
+        }
+    }
+    repositories {
+        maven {
+            // change to point to your repo, e.g. http://my.org/repo
+            url "file:///Users/tariq/"
+        }
     }
 }

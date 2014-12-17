@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014 Tariq Bugrara
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.progix.dropwizard.patch.explicit;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,11 +26,11 @@ import io.progix.dropwizard.patch.explicit.handlers.*;
 import java.util.List;
 
 /**
- * This class is deserialized from an array of {@link io.progix.dropwizard.patch.explicit.PatchInstruction} and contains
- * the explicit patch logic for use in a resource method.
+ * This class is deserialized from an array of {@link PatchInstruction} and contains the explicit patch logic for use in
+ * a resource method.
  * <p/>
  * Add this class as the entity for a resource method to support explicit patching. Deserialization is done
- * automatically using {@link io.progix.dropwizard.patch.explicit.PatchRequestDeserializer}.
+ * automatically using {@link PatchRequestDeserializer}.
  * <p/>
  * {@link PatchRequest#apply()} is used to apply all handler logic and should be called before the end of the resource
  * method for patching to occur.
@@ -37,9 +53,9 @@ public class PatchRequest {
     private TestHandler testHandler;
 
     /**
-     * Constructs an instance using a list of {@link io.progix.dropwizard.patch.explicit.PatchInstruction}
+     * Constructs an instance using a list of {@link PatchInstruction}
      *
-     * @param instructions A list of {@link io.progix.dropwizard.patch.explicit.PatchInstruction}
+     * @param instructions A list of {@link PatchInstruction}
      */
     public PatchRequest(List<PatchInstruction> instructions) {
         super();
@@ -47,8 +63,7 @@ public class PatchRequest {
     }
 
     /**
-     * @return The list of {@link io.progix.dropwizard.patch.explicit.PatchInstruction} this patch request is composed
-     * of.
+     * @return The list of {@link PatchInstruction} this patch request is composed of.
      * <p/>
      * This may be useful for edge cases not covered with the operation handlers.
      */
@@ -57,14 +72,14 @@ public class PatchRequest {
     }
 
     /**
-     * Using available patch operation handlers, this method will iterate through all {@link
-     * io.progix.dropwizard.patch.explicit.PatchInstruction} in this patch request and run the handler logic.
+     * Using available patch operation handlers, this method will iterate through all {@link PatchInstruction} in this
+     * patch request and run the handler logic.
      * <p/>
      * Calling this method is required for the patch to be applied and is left to the user to decide where and when it
      * will applied in a resource method.
      *
      * @throws PatchTestFailedException when a TEST patch operation fails
-     * @see io.progix.dropwizard.patch.explicit.PatchOperation#TEST
+     * @see PatchOperation#TEST
      */
     public void apply() throws PatchTestFailedException {
         for (PatchInstruction instruction : instructions) {
@@ -125,65 +140,66 @@ public class PatchRequest {
     }
 
     /**
-     * Sets the {@link io.progix.dropwizard.patch.explicit.handlers.AddHandler} for the ADD patch operation.
+     * Sets the {@link AddHandler} for the ADD patch operation.
      *
-     * @param handler The {@link io.progix.dropwizard.patch.explicit.handlers.AddHandler} to use for this patch request
-     * @see io.progix.dropwizard.patch.explicit.PatchOperation#ADD
+     * @param handler The {@link AddHandler} to use for this patch request
+     *
+     * @see PatchOperation#ADD
      */
     public void add(AddHandler handler) {
         this.addHandler = handler;
     }
 
     /**
-     * Sets the {@link io.progix.dropwizard.patch.explicit.handlers.RemoveHandler} for the REMOVE patch operation.
+     * Sets the {@link RemoveHandler} for the REMOVE patch operation.
      *
-     * @param handler The {@link io.progix.dropwizard.patch.explicit.handlers.RemoveHandler} to use for this patch
-     *                request
-     * @see io.progix.dropwizard.patch.explicit.PatchOperation#REMOVE
+     * @param handler The {@link RemoveHandler} to use for this patch request
+     *
+     * @see PatchOperation#REMOVE
      */
     public void remove(RemoveHandler handler) {
         this.removeHandler = handler;
     }
 
     /**
-     * Sets the {@link io.progix.dropwizard.patch.explicit.handlers.ReplaceHandler} for the REMOVE patch operation.
+     * Sets the {@link ReplaceHandler} for the REMOVE patch operation.
      *
-     * @param handler The {@link io.progix.dropwizard.patch.explicit.handlers.ReplaceHandler} to use for this patch
-     *                request
-     * @see io.progix.dropwizard.patch.explicit.PatchOperation#REPLACE
+     * @param handler The {@link ReplaceHandler} to use for this patch request
+     *
+     * @see PatchOperation#REPLACE
      */
     public void replace(ReplaceHandler handler) {
         this.replaceHandler = handler;
     }
 
     /**
-     * Sets the {@link io.progix.dropwizard.patch.explicit.handlers.MoveHandler} for the REMOVE patch operation.
+     * Sets the {@link MoveHandler} for the REMOVE patch operation.
      *
-     * @param handler The {@link io.progix.dropwizard.patch.explicit.handlers.MoveHandler} to use for this patch
-     *                request
-     * @see io.progix.dropwizard.patch.explicit.PatchOperation#MOVE
+     * @param handler The {@link MoveHandler} to use for this patch request
+     *
+     * @see PatchOperation#MOVE
      */
     public void move(MoveHandler handler) {
         this.moveHandler = handler;
     }
 
     /**
-     * Sets the {@link io.progix.dropwizard.patch.explicit.handlers.CopyHandler} for the REMOVE patch operation.
+     * Sets the {@link CopyHandler} for the REMOVE patch operation.
      *
-     * @param handler The {@link io.progix.dropwizard.patch.explicit.handlers.CopyHandler} to use for this patch
-     *                request
-     * @see io.progix.dropwizard.patch.explicit.PatchOperation#COPY
+     * @param handler The {@link CopyHandler} to use for this patch request
+     *
+     * @see PatchOperation#COPY
      */
     public void copy(CopyHandler handler) {
         this.copyHandler = handler;
     }
 
     /**
-     * Sets the {@link io.progix.dropwizard.patch.explicit.handlers.TestHandler} for the REMOVE patch operation.
+     * Sets the {@link TestHandler} for the REMOVE patch operation.
      *
-     * @param handler The {@link io.progix.dropwizard.patch.explicit.handlers.TestHandler} to use for this patch
-     *                request
-     * @see io.progix.dropwizard.patch.explicit.PatchOperation#TEST
+     * @param handler The {@link TestHandler} to use for this patch request
+     *
+     * @see PatchOperation#TEST
      */
     public void test(TestHandler handler) {
         this.testHandler = handler;
@@ -198,10 +214,8 @@ public class PatchRequest {
 
         PatchRequest that = (PatchRequest) o;
 
-        if (!instructions.equals(that.instructions))
-            return false;
+        return instructions.equals(that.instructions);
 
-        return true;
     }
 
     @Override

@@ -18,7 +18,10 @@ apply plugin: 'java'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
+groupId 'io.progix.dropwizard'
+artifactId 'dropwizard-patch'
 version '0.1.0'
+
 
 repositories {
     mavenCentral()
@@ -31,6 +34,12 @@ dependencies {
     )
 }
 
+test {
+    filter {
+        includeTestsMatching "io.progix.dropwizard.patch.test.*"
+    }
+}
+
 task sourceJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
@@ -41,57 +50,56 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-test {
-    filter {
-        includeTestsMatching "io.progix.dropwizard.patch.test.*"
-    }
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourceJar
 }
 
 signing {
     sign configurations.archives
-    sign sourceJar
-    sign jar
-    sign javadocJar
 }
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId 'io.progix.dropwizard'
-            artifactId 'dropwizard-patch'
-            version '0.1.0'
-
             from components.java
 
-            artifact sourceJar
-            artifact javadocJar
-
             pom.withXml {
-                asNode().appendNode('name', 'Dropwizard Patch')
-                asNode().appendNode('description',
-                        'An implementation of the HTTP method PATCH using RFC6902 for the Dropwizard framework.')
-                asNode().appendNode('url', 'https://github.com/tbugrara/dropwizard-patch')
 
-                def license = asNode().appendNode('licenses').appendNode('license')
-                license.appendNode('name', 'The Apache License, Version 2.0')
-                license.appendNode('url', 'http://www.apache.org/licenses/LICENSE-2.0.txt')
-
-                def developer = asNode().appendNode('developers').appendNode('developer')
-                developer.appendNode('name', 'Tariq Bugrara')
-                developer.appendNode('email', 'tbugrara@gmail.com')
-                developer.appendNode('url', 'https://github.com/tbugrara/dropwizard-patch')
-
-                def scm = asNode().appendNode('scm');
-                scm.appendNode('connection', 'scm:git:git@github.com:tbugrara/dropwizard-patch.git')
-                scm.appendNode('developerConnection', 'scm:git:git@github.com:tbugrara/dropwizard-patch.git')
-                scm.appendNode('url', 'git@github.com:tbugrara/dropwizard-patch.git')
+                asNode().children().last() + {
+                    resolveStrategy = Closure.DELEGATE_FIRST
+                    name 'Dropwizard Patch'
+                    description 'An implementation of the HTTP method PATCH using RFC6902 for the Dropwizard framework.'
+                    url 'https://github.com/tbugrara/dropwizard-patch'
+                    version version
+                    scm {
+                        url 'scm:git:git@github.com:tbugrara/dropwizard-patch.git'
+                        connection 'scm:git:git@github.com:tbugrara/dropwizard-patch.git'
+                        developerConnection 'git@github.com:tbugrara/dropwizard-patch.git'
+                    }
+                    licenses {
+                        license {
+                            name 'The Apache Software License, Version 2.0'
+                            url 'http://www.apache.org/license/LICENSE-2.0.txt'
+                            distribution 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id 'tbugrara'
+                            name 'Tariq Bugrara'
+                            email 'tbugrara@gmail.com'
+                        }
+                    }
+                }
             }
         }
     }
     repositories {
         maven {
             // change to point to your repo, e.g. http://my.org/repo
-            url "file:///Users/tariqbugrara/dev/repo/maven"
+            url "file:///Users/tariq/"
         }
     }
 }

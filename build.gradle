@@ -18,20 +18,14 @@ apply plugin: 'java'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-groupId 'io.progix.dropwizard'
-artifactId 'dropwizard-patch'
-version '0.1.0'
-
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile(
-            'io.dropwizard:dropwizard-core:0.7.1',
-            'io.dropwizard:dropwizard-testing:0.7.1'
-    )
+    compile 'io.dropwizard:dropwizard-core:0.7.1'
+    compile 'io.dropwizard:dropwizard-auth:0.7.1'
+    testCompile 'io.dropwizard:dropwizard-testing:0.7.1'
 }
 
 test {
@@ -63,6 +57,10 @@ signing {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            groupId 'io.progix.dropwizard'
+            artifactId 'dropwizard-patch'
+            version '0.1.0'
+
             from components.java
 
             pom.withXml {
@@ -72,7 +70,6 @@ publishing {
                     name 'Dropwizard Patch'
                     description 'An implementation of the HTTP method PATCH using RFC6902 for the Dropwizard framework.'
                     url 'https://github.com/tbugrara/dropwizard-patch'
-                    version version
                     scm {
                         url 'scm:git:git@github.com:tbugrara/dropwizard-patch.git'
                         connection 'scm:git:git@github.com:tbugrara/dropwizard-patch.git'
@@ -99,7 +96,7 @@ publishing {
     repositories {
         maven {
             // change to point to your repo, e.g. http://my.org/repo
-            url "file:///Users/tariq/"
+            url "file:///Users/tariqbugrara/dev/repo/maven//"
         }
     }
 }

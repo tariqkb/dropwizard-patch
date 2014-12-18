@@ -31,7 +31,7 @@ import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class ManualPatchResourceTest {
+public class ExplicitPatchTest {
 
     private UserStore dao = new UserStore();
 
@@ -46,7 +46,7 @@ public class ManualPatchResourceTest {
         List<Object> pets = new ArrayList<Object>(Arrays.asList(bird));
         PatchInstruction addPetInstruction = new PatchInstruction(PatchOperation.ADD, "/pets", pets, "");
 
-        resources.client().resource("/users/0").type(MediaType.APPLICATION_JSON)
+        resources.client().resource("/users/explicit/0").type(MediaType.APPLICATION_JSON)
                 .method("PATCH", Arrays.asList(addPetInstruction));
 
         User user = new User(0, "Tariq", new ArrayList<>(Arrays.asList("tariq@progix.io")),
@@ -59,7 +59,7 @@ public class ManualPatchResourceTest {
     public void testManualCopy() {
         PatchInstruction copyPetInstruction = new PatchInstruction(PatchOperation.COPY, "/pets/1", null, "/pets/0");
 
-        resources.client().resource("/users/0").type(MediaType.APPLICATION_JSON)
+        resources.client().resource("/users/explicit/0").type(MediaType.APPLICATION_JSON)
                 .method("PATCH", Arrays.asList(copyPetInstruction));
 
         User user = new User(0, "Tariq", new ArrayList<>(Arrays.asList("tariq@progix.io")), new ArrayList<>(
@@ -73,7 +73,7 @@ public class ManualPatchResourceTest {
     public void testManualMove() {
         PatchInstruction movePetInstruction = new PatchInstruction(PatchOperation.MOVE, "/pets/1", null, "/pets/0");
 
-        resources.client().resource("/users/1").type(MediaType.APPLICATION_JSON)
+        resources.client().resource("/users/explicit/1").type(MediaType.APPLICATION_JSON)
                 .method("PATCH", Arrays.asList(movePetInstruction));
 
         User user = new User(1, "Alli", new ArrayList<>(Arrays.asList("alli@beeb.com")), new ArrayList<>(
@@ -88,7 +88,7 @@ public class ManualPatchResourceTest {
         PatchInstruction removeEmailInstruction = new PatchInstruction(PatchOperation.REMOVE, "/emailAddresses/0", null,
                 "");
 
-        resources.client().resource("/users/0").type(MediaType.APPLICATION_JSON)
+        resources.client().resource("/users/explicit/0").type(MediaType.APPLICATION_JSON)
                 .method("PATCH", Arrays.asList(removePetInstruction, removeEmailInstruction));
 
         User user = new User(0, "Tariq", new ArrayList<String>(), new ArrayList<Pet>());
@@ -107,7 +107,7 @@ public class ManualPatchResourceTest {
         PatchInstruction replaceEmailInstruction = new PatchInstruction(PatchOperation.REPLACE, "/emailAddresses/0",
                 new ArrayList<Object>(Arrays.asList("allison@beeb.org")), "");
 
-        resources.client().resource("/users/1").type(MediaType.APPLICATION_JSON)
+        resources.client().resource("/users/explicit/1").type(MediaType.APPLICATION_JSON)
                 .method("PATCH", Arrays.asList(replacePetInstruction, replaceNameInstruction, replaceEmailInstruction));
 
         User user = new User(1, "Allison", new ArrayList<>(Arrays.asList("allison@beeb.org")),
@@ -127,7 +127,7 @@ public class ManualPatchResourceTest {
         PatchInstruction testEmailInstruction = new PatchInstruction(PatchOperation.TEST, "/emailAddresses/0",
                 new ArrayList<Object>(Arrays.asList("alli@beeb.com")), "");
 
-        resources.client().resource("/users/1").type(MediaType.APPLICATION_JSON)
+        resources.client().resource("/users/explicit/1").type(MediaType.APPLICATION_JSON)
                 .method("PATCH", Arrays.asList(testPetInstruction, testNameInstruction, testEmailInstruction));
 
     }
@@ -137,7 +137,7 @@ public class ManualPatchResourceTest {
         PatchInstruction testNameInstruction = new PatchInstruction(PatchOperation.TEST, "/name",
                 new ArrayList<Object>(Arrays.asList("Allison")), "");
 
-        ClientResponse response = resources.client().resource("/users/1").type(MediaType.APPLICATION_JSON)
+        ClientResponse response = resources.client().resource("/users/explicit/1").type(MediaType.APPLICATION_JSON)
                 .method("PATCH", ClientResponse.class, Arrays.asList(testNameInstruction));
 
         assertThat(response.getStatus()).isEqualTo(412);

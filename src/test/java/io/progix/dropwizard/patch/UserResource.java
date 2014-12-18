@@ -21,9 +21,13 @@ import io.progix.dropwizard.patch.explicit.JsonPatchValue;
 import io.progix.dropwizard.patch.explicit.JsonPath;
 import io.progix.dropwizard.patch.explicit.PatchRequest;
 import io.progix.dropwizard.patch.explicit.handlers.*;
+import io.progix.dropwizard.patch.implicit.Patched;
 import org.apache.log4j.Logger;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,25 +46,16 @@ public class UserResource {
         this.users = store.getUsers();
     }
 
-    @GET
-    public List<User> getUsers() {
-        return users;
-    }
+    @PATCH
+    @Path("/implicit/{id}")
+    public User updateImplicitUser(@PathParam("id") int id, @Patched User updatedUser, PatchRequest request) {
 
-    @GET
-    @Path("/{id}")
-    public User getUser(@PathParam("id") long userId) {
-        for (User user : users) {
-            if (user.getId() == userId) {
-                return user;
-            }
-        }
-        throw new RuntimeException("No user found");
+        return updatedUser;
     }
 
     @PATCH
-    @Path("/{id}")
-    public void updateUser(@PathParam("id") int id, PatchRequest request) throws PatchTestFailedException {
+    @Path("/explicit/{id}")
+    public void updateExplicitUser(@PathParam("id") int id, PatchRequest request) throws PatchTestFailedException {
 
         final User user = users.get(id);
 

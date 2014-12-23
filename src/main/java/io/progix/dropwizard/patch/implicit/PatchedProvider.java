@@ -41,7 +41,6 @@ public class PatchedProvider implements InjectableProvider<Patched, Parameter> {
         @Override
         public T getValue(HttpContext c) {
             String patchRequest = c.getRequest().getEntity(String.class);
-            T value = null;
             try {
                 PatchRequest pr = Jackson.newObjectMapper().readValue(patchRequest, PatchRequest.class);
             } catch (IOException e) {

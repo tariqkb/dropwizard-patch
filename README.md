@@ -55,6 +55,14 @@ This operation can be used to validate a part of a resource either before or aft
 
 Getting started
 ---------------
+```xml
+<dependency>
+    <groupId>io.progix.dropwizard</groupId>
+    <artifactId>dropwizard-patch</artifactId>
+    <version>0.1.0</version>
+</dependency>
+```
+
 To integrate this implementation into your Dropwizard project, add the `PatchBundle` in the `initialize()` method of your `Application` class.
 
 ```java

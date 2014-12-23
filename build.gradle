@@ -15,8 +15,12 @@
  */
 
 apply plugin: 'java'
-apply plugin: 'maven-publish'
+apply plugin: 'maven'
 apply plugin: 'signing'
+
+group = "io.progix.dropwizard"
+archivesBaseName = "dropwizard-patch"
+version = "0.1.0"
 
 repositories {
     mavenCentral()
@@ -34,69 +38,61 @@ test {
     }
 }
 
-task sourceJar(type: Jar, dependsOn: classes) {
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
     classifier = 'sources'
     from sourceSets.main.allSource
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
 artifacts {
-    archives jar
-    archives javadocJar
-    archives sourceJar
+    archives javadocJar, sourcesJar
 }
 
 signing {
     sign configurations.archives
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId 'io.progix.dropwizard'
-            artifactId 'dropwizard-patch'
-            version '0.1.0'
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-            from components.java
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
 
-            pom.withXml {
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
 
-                asNode().children().last() + {
-                    resolveStrategy = Closure.DELEGATE_FIRST
-                    name 'Dropwizard Patch'
-                    description 'An implementation of the HTTP method PATCH using RFC6902 for the Dropwizard framework.'
-                    url 'https://github.com/tbugrara/dropwizard-patch'
-                    scm {
-                        url 'scm:git:git@github.com:tbugrara/dropwizard-patch.git'
-                        connection 'scm:git:git@github.com:tbugrara/dropwizard-patch.git'
-                        developerConnection 'git@github.com:tbugrara/dropwizard-patch.git'
+            pom.project {
+                name 'Dropwizard Patch'
+                description 'An implementation of the HTTP method PATCH using RFC6902 for the Dropwizard framework.'
+                url 'https://github.com/tbugrara/dropwizard-patch'
+                scm {
+                    url 'scm:git:git@github.com:tbugrara/dropwizard-patch.git'
+                    connection 'scm:git:git@github.com:tbugrara/dropwizard-patch.git'
+                    developerConnection 'git@github.com:tbugrara/dropwizard-patch.git'
+                }
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/license/LICENSE-2.0.txt'
+                        distribution 'repo'
                     }
-                    licenses {
-                        license {
-                            name 'The Apache Software License, Version 2.0'
-                            url 'http://www.apache.org/license/LICENSE-2.0.txt'
-                            distribution 'repo'
-                        }
-                    }
-                    developers {
-                        developer {
-                            id 'tbugrara'
-                            name 'Tariq Bugrara'
-                            email 'tbugrara@gmail.com'
-                        }
+                }
+                developers {
+                    developer {
+                        id 'tbugrara'
+                        name 'Tariq Bugrara'
+                        email 'tbugrara@gmail.com'
                     }
                 }
             }
-        }
-    }
-    repositories {
-        maven {
-            // change to point to your repo, e.g. http://my.org/repo
-            url "file:///Users/tariqbugrara/dev/repo/maven//"
         }
     }
 }

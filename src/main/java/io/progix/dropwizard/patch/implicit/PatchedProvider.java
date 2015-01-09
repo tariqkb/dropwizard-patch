@@ -24,7 +24,7 @@ import com.sun.jersey.server.impl.inject.AbstractHttpContextInjectable;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.InjectableProvider;
 import io.dropwizard.jackson.Jackson;
-import io.progix.dropwizard.patch.explicit.PatchRequest;
+import io.progix.dropwizard.patch.JsonPatch;
 
 import java.io.IOException;
 
@@ -42,7 +42,7 @@ public class PatchedProvider implements InjectableProvider<Patched, Parameter> {
         public T getValue(HttpContext c) {
             String patchRequest = c.getRequest().getEntity(String.class);
             try {
-                PatchRequest pr = Jackson.newObjectMapper().readValue(patchRequest, PatchRequest.class);
+                JsonPatch pr = Jackson.newObjectMapper().readValue(patchRequest, JsonPatch.class);
             } catch (IOException e) {
                 //TODO use useful exception
                 throw new RuntimeException("failed", e);

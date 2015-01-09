@@ -1,0 +1,36 @@
+/*
+ * Copyright 2014 Tariq Bugrara
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.progix.dropwizard.patch.exception;
+
+import io.progix.dropwizard.patch.JsonPath;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+
+/**
+ * JAX-RS {@link ExceptionMapper} for {@link InvalidPatchPathException}
+ * <p/>
+ * The response will return with a HTTP status code 422 Unprocessable Entity to signify that the {@link JsonPath}
+ * accessed is not valid.
+ */
+public class InvalidPatchPathExceptionMapper implements ExceptionMapper<InvalidPatchPathException> {
+
+    @Override
+    public Response toResponse(InvalidPatchPathException exception) {
+        return Response.status(422).entity(exception.getMessage()).build();
+    }
+}

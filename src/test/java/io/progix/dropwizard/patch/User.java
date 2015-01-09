@@ -32,6 +32,10 @@ public class User {
         this.pets = pets;
     }
 
+    public User() {
+
+    }
+
     public long getId() {
         return id;
     }

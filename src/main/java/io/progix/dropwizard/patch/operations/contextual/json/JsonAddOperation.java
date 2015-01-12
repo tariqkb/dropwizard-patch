@@ -16,14 +16,31 @@
 
 package io.progix.dropwizard.patch.operations.contextual.json;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.progix.dropwizard.patch.JsonPatchValue;
 import io.progix.dropwizard.patch.JsonPath;
 import io.progix.dropwizard.patch.operations.contextual.ContextualAddOperation;
 
-public class JsonAddOperation implements ContextualAddOperation<String> {
+import java.util.LinkedHashMap;
 
+public class JsonAddOperation<T> implements ContextualAddOperation<T> {
+
+    private final ObjectMapper mapper;
+    private LinkedHashMap<String, String> contextMap;
+
+    public JsonAddOperation(ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
-    public void add(String context, JsonPath path, JsonPatchValue value) {
-
+    public void add(T context, JsonPath path, JsonPatchValue value) {
+        TypeFactory t = TypeFactory.defaultInstance();
+        try {
+            LinkedHashMap<String, String> mapContext = mapper
+                    .readValue(mapper.writeValueAsString(context), t.constructMapType(LinkedHashMap.class, String.class, String.class));
+        } catch(java.io.IOException e) {
+        }
     }
 }

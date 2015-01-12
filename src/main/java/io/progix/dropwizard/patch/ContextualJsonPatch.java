@@ -1,5 +1,3 @@
-package io.progix.dropwizard.patch;
-
 /*
  * Copyright 2014 Tariq Bugrara
  *
@@ -15,6 +13,8 @@ package io.progix.dropwizard.patch;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package io.progix.dropwizard.patch;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonPointer;

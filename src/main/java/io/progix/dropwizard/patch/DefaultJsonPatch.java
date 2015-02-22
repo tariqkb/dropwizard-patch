@@ -16,11 +16,15 @@
 
 package io.progix.dropwizard.patch;
 
-import io.progix.dropwizard.patch.operations.contextual.json.JsonAddOperation;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.dropwizard.jackson.Jackson;
+import io.progix.dropwizard.patch.operations.contextual.json.DefaultAddOperation;
 
 import java.util.List;
 
 public class DefaultJsonPatch<T> extends ContextualJsonPatch<T> {
+
+    private final ObjectMapper mapper;
 
     /**
      * Constructs an instance using a list of {@link JsonPatchOperation}
@@ -29,6 +33,9 @@ public class DefaultJsonPatch<T> extends ContextualJsonPatch<T> {
      */
     public DefaultJsonPatch(List<JsonPatchOperation> instructions) {
         super(instructions);
-        setAdd(new JsonAddOperation<T>());
+        this.mapper = Jackson.newObjectMapper();
+
+        setAdd(new DefaultAddOperation<T>(mapper, factory));
     }
+
 }

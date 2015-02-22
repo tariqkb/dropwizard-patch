@@ -6,32 +6,101 @@ import io.progix.dropwizard.patch.*;
 import io.progix.dropwizard.patch.exception.PatchOperationNotSupportedException;
 import io.progix.dropwizard.patch.operations.*;
 import io.progix.dropwizard.patch.operations.contextual.*;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+@RunWith(Parameterized.class)
 public class JsonPatchOperationTest {
 
     private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
 
-    ContextualJsonPatch<User> contextualJsonPatch;
-    JsonPatch jsonPatch;
+    private final Map<JsonPatchOperationType, Boolean> includeMap;
 
-    @SuppressWarnings("unchecked")
-    @Before
-    public void init() throws IOException {
-        contextualJsonPatch = (ContextualJsonPatch<User>) MAPPER.readValue(fixture("fixtures/patchrequest.json"), ContextualJsonPatch.class);
-        jsonPatch = MAPPER.readValue(fixture("fixtures/patchrequest.json"), JsonPatch.class);
+    public JsonPatchOperationTest(Map<JsonPatchOperationType, Boolean> includeMap) {
+        this.includeMap = includeMap;
     }
 
-    private Map<JsonPatchOperationType, Boolean> m(boolean includeAdd, boolean includeCopy, boolean includeMove, boolean includeRemove, boolean includeReplace, boolean includeTest) {
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() {
+        Object[][] data = new Object[][]{{m(true, true, true, true, true, true)},
+                {m(true, true, true, true, true, false)},
+                {m(true, true, true, true, false, true)},
+                {m(true, true, true, true, false, false)},
+                {m(true, true, true, false, true, true)},
+                {m(true, true, true, false, true, false)},
+                {m(true, true, true, false, false, true)},
+                {m(true, true, true, false, false, false)},
+                {m(true, true, false, true, true, true)},
+                {m(true, true, false, true, true, false)},
+                {m(true, true, false, true, false, true)},
+                {m(true, true, false, true, false, false)},
+                {m(true, true, false, false, true, true)},
+                {m(true, true, false, false, true, false)},
+                {m(true, true, false, false, false, true)},
+                {m(true, true, false, false, false, false)},
+
+                {m(true, false, true, true, true, true)},
+                {m(true, false, true, true, true, false)},
+                {m(true, false, true, true, false, true)},
+                {m(true, false, true, true, false, false)},
+                {m(true, false, true, false, true, true)},
+                {m(true, false, true, false, true, false)},
+                {m(true, false, true, false, false, true)},
+                {m(true, false, true, false, false, false)},
+                {m(true, false, false, true, true, true)},
+                {m(true, false, false, true, true, false)},
+                {m(true, false, false, true, false, true)},
+                {m(true, false, false, true, false, false)},
+                {m(true, false, false, false, true, true)},
+                {m(true, false, false, false, true, false)},
+                {m(true, false, false, false, false, true)},
+                {m(true, false, false, false, false, false)},
+
+                {m(false, true, true, true, true, true)},
+                {m(false, true, true, true, true, false)},
+                {m(false, true, true, true, false, true)},
+                {m(false, true, true, true, false, false)},
+                {m(false, true, true, false, true, true)},
+                {m(false, true, true, false, true, false)},
+                {m(false, true, true, false, false, true)},
+                {m(false, true, true, false, false, false)},
+                {m(false, true, false, true, true, true)},
+                {m(false, true, false, true, true, false)},
+                {m(false, true, false, true, false, true)},
+                {m(false, true, false, true, false, false)},
+                {m(false, true, false, false, true, true)},
+                {m(false, true, false, false, true, false)},
+                {m(false, true, false, false, false, true)},
+                {m(false, true, false, false, false, false)},
+
+                {m(false, false, true, true, true, true)},
+                {m(false, false, true, true, true, false)},
+                {m(false, false, true, true, false, true)},
+                {m(false, false, true, true, false, false)},
+                {m(false, false, true, false, true, true)},
+                {m(false, false, true, false, true, false)},
+                {m(false, false, true, false, false, true)},
+                {m(false, false, true, false, false, false)},
+                {m(false, false, false, true, true, true)},
+                {m(false, false, false, true, true, false)},
+                {m(false, false, false, true, false, true)},
+                {m(false, false, false, true, false, false)},
+                {m(false, false, false, false, true, true)},
+                {m(false, false, false, false, true, false)},
+                {m(false, false, false, false, false, true)},
+                {m(false, false, false, false, false, false)}};
+        return Arrays.asList(data);
+    }
+
+    private static Map<JsonPatchOperationType, Boolean> m(boolean includeAdd, boolean includeCopy, boolean includeMove, boolean includeRemove, boolean includeReplace, boolean includeTest) {
         Map<JsonPatchOperationType, Boolean> map = new HashMap<>();
         map.put(JsonPatchOperationType.ADD, includeAdd);
         map.put(JsonPatchOperationType.COPY, includeCopy);
@@ -42,7 +111,11 @@ public class JsonPatchOperationTest {
         return map;
     }
 
-    private void testContextual(Map<JsonPatchOperationType, Boolean> includeMap) {
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testContextual() throws IOException {
+        ContextualJsonPatch<User> contextualJsonPatch = (ContextualJsonPatch<User>) MAPPER.readValue(fixture("fixtures/patchrequest.json"), ContextualJsonPatch.class);
+
         final Map<JsonPatchOperationType, Boolean> didMap = m(false, false, false, false, false, false);
 
         if (includeMap.get(JsonPatchOperationType.ADD)) {
@@ -95,23 +168,32 @@ public class JsonPatchOperationTest {
             });
         }
 
+        Set<JsonPatchOperationType> operationsInCaughtException = new HashSet<>();
         try {
             contextualJsonPatch.apply(new User());
         } catch (PatchOperationNotSupportedException e) {
-            for (Map.Entry<JsonPatchOperationType, Boolean> entry : includeMap.entrySet()) {
-                JsonPatchOperationType type = entry.getKey();
-                boolean included = entry.getValue();
-
-                if (e.getOperations().contains(type) && included) {
-                    fail("PatchOperationNotSupported when should have been supported (" + type + ")");
-                }
-            }
+            operationsInCaughtException.addAll(e.getOperations());
         }
 
         assertEquals(includeMap, didMap);
+
+        for (Map.Entry<JsonPatchOperationType, Boolean> entry : includeMap.entrySet()) {
+            JsonPatchOperationType type = entry.getKey();
+            boolean included = entry.getValue();
+
+            if (operationsInCaughtException.contains(type) && included) {
+                fail("PatchOperationNotSupported exception thrown when should have been supported (" + type + ")");
+            } else if (!operationsInCaughtException.contains(type) && !included) {
+                fail("No PatchOperationNotSupported exception thrown when it should have been (" + type + ")");
+            }
+        }
+
     }
 
-    private void test(Map<JsonPatchOperationType, Boolean> includeMap) {
+    @Test
+    public void test() throws IOException {
+        JsonPatch jsonPatch = MAPPER.readValue(fixture("fixtures/patchrequest.json"), JsonPatch.class);
+
         final Map<JsonPatchOperationType, Boolean> didMap = m(false, false, false, false, false, false);
 
         if (includeMap.get(JsonPatchOperationType.ADD)) {
@@ -164,162 +246,25 @@ public class JsonPatchOperationTest {
             });
         }
 
+        Set<JsonPatchOperationType> operationsInCaughtException = new HashSet<>();
         try {
             jsonPatch.apply();
         } catch (PatchOperationNotSupportedException e) {
-            for (Map.Entry<JsonPatchOperationType, Boolean> entry : includeMap.entrySet()) {
-                JsonPatchOperationType type = entry.getKey();
-                boolean included = entry.getValue();
+            operationsInCaughtException.addAll(e.getOperations());
+        }
 
-                if (e.getOperations().contains(type) && included) {
-                    fail("PatchOperationNotSupported when should have been supported (" + type + ")");
-                }
+        assertEquals(includeMap, didMap);
+
+        for (Map.Entry<JsonPatchOperationType, Boolean> entry : includeMap.entrySet()) {
+            JsonPatchOperationType type = entry.getKey();
+            boolean included = entry.getValue();
+
+            if (operationsInCaughtException.contains(type) && included) {
+                fail("PatchOperationNotSupported exception thrown when should have been supported (" + type + ")");
+            } else if (!operationsInCaughtException.contains(type) && !included) {
+                fail("No PatchOperationNotSupported exception thrown when it should have been (" + type + ")");
             }
         }
-        assertEquals(includeMap, didMap);
     }
 
-    @Test
-    public void testJsonPatch() {
-
-        test(m(true, true, true, true, true, true));
-        test(m(true, true, true, true, true, false));
-        test(m(true, true, true, true, false, true));
-        test(m(true, true, true, true, false, false));
-        test(m(true, true, true, false, true, true));
-        test(m(true, true, true, false, true, false));
-        test(m(true, true, true, false, false, true));
-        test(m(true, true, true, false, false, false));
-        test(m(true, true, false, true, true, true));
-        test(m(true, true, false, true, true, false));
-        test(m(true, true, false, true, false, true));
-        test(m(true, true, false, true, false, false));
-        test(m(true, true, false, false, true, true));
-        test(m(true, true, false, false, true, false));
-        test(m(true, true, false, false, false, true));
-        test(m(true, true, false, false, false, false));
-
-        test(m(true, false, true, true, true, true));
-        test(m(true, false, true, true, true, false));
-        test(m(true, false, true, true, false, true));
-        test(m(true, false, true, true, false, false));
-        test(m(true, false, true, false, true, true));
-        test(m(true, false, true, false, true, false));
-        test(m(true, false, true, false, false, true));
-        test(m(true, false, true, false, false, false));
-        test(m(true, false, false, true, true, true));
-        test(m(true, false, false, true, true, false));
-        test(m(true, false, false, true, false, true));
-        test(m(true, false, false, true, false, false));
-        test(m(true, false, false, false, true, true));
-        test(m(true, false, false, false, true, false));
-        test(m(true, false, false, false, false, true));
-        test(m(true, false, false, false, false, false));
-
-        test(m(false, true, true, true, true, true));
-        test(m(false, true, true, true, true, false));
-        test(m(false, true, true, true, false, true));
-        test(m(false, true, true, true, false, false));
-        test(m(false, true, true, false, true, true));
-        test(m(false, true, true, false, true, false));
-        test(m(false, true, true, false, false, true));
-        test(m(false, true, true, false, false, false));
-        test(m(false, true, false, true, true, true));
-        test(m(false, true, false, true, true, false));
-        test(m(false, true, false, true, false, true));
-        test(m(false, true, false, true, false, false));
-        test(m(false, true, false, false, true, true));
-        test(m(false, true, false, false, true, false));
-        test(m(false, true, false, false, false, true));
-        test(m(false, true, false, false, false, false));
-
-        test(m(false, false, true, true, true, true));
-        test(m(false, false, true, true, true, false));
-        test(m(false, false, true, true, false, true));
-        test(m(false, false, true, true, false, false));
-        test(m(false, false, true, false, true, true));
-        test(m(false, false, true, false, true, false));
-        test(m(false, false, true, false, false, true));
-        test(m(false, false, true, false, false, false));
-        test(m(false, false, false, true, true, true));
-        test(m(false, false, false, true, true, false));
-        test(m(false, false, false, true, false, true));
-        test(m(false, false, false, true, false, false));
-        test(m(false, false, false, false, true, true));
-        test(m(false, false, false, false, true, false));
-        test(m(false, false, false, false, false, true));
-        test(m(false, false, false, false, false, false));
-    }
-
-    @Test
-    public void testContextualJsonPatch() {
-
-        testContextual(m(true, true, true, true, true, true));
-        testContextual(m(true, true, true, true, true, false));
-        testContextual(m(true, true, true, true, false, true));
-        testContextual(m(true, true, true, true, false, false));
-        testContextual(m(true, true, true, false, true, true));
-        testContextual(m(true, true, true, false, true, false));
-        testContextual(m(true, true, true, false, false, true));
-        testContextual(m(true, true, true, false, false, false));
-        testContextual(m(true, true, false, true, true, true));
-        testContextual(m(true, true, false, true, true, false));
-        testContextual(m(true, true, false, true, false, true));
-        testContextual(m(true, true, false, true, false, false));
-        testContextual(m(true, true, false, false, true, true));
-        testContextual(m(true, true, false, false, true, false));
-        testContextual(m(true, true, false, false, false, true));
-        testContextual(m(true, true, false, false, false, false));
-
-        testContextual(m(true, false, true, true, true, true));
-        testContextual(m(true, false, true, true, true, false));
-        testContextual(m(true, false, true, true, false, true));
-        testContextual(m(true, false, true, true, false, false));
-        testContextual(m(true, false, true, false, true, true));
-        testContextual(m(true, false, true, false, true, false));
-        testContextual(m(true, false, true, false, false, true));
-        testContextual(m(true, false, true, false, false, false));
-        testContextual(m(true, false, false, true, true, true));
-        testContextual(m(true, false, false, true, true, false));
-        testContextual(m(true, false, false, true, false, true));
-        testContextual(m(true, false, false, true, false, false));
-        testContextual(m(true, false, false, false, true, true));
-        testContextual(m(true, false, false, false, true, false));
-        testContextual(m(true, false, false, false, false, true));
-        testContextual(m(true, false, false, false, false, false));
-
-        testContextual(m(false, true, true, true, true, true));
-        testContextual(m(false, true, true, true, true, false));
-        testContextual(m(false, true, true, true, false, true));
-        testContextual(m(false, true, true, true, false, false));
-        testContextual(m(false, true, true, false, true, true));
-        testContextual(m(false, true, true, false, true, false));
-        testContextual(m(false, true, true, false, false, true));
-        testContextual(m(false, true, true, false, false, false));
-        testContextual(m(false, true, false, true, true, true));
-        testContextual(m(false, true, false, true, true, false));
-        testContextual(m(false, true, false, true, false, true));
-        testContextual(m(false, true, false, true, false, false));
-        testContextual(m(false, true, false, false, true, true));
-        testContextual(m(false, true, false, false, true, false));
-        testContextual(m(false, true, false, false, false, true));
-        testContextual(m(false, true, false, false, false, false));
-
-        testContextual(m(false, false, true, true, true, true));
-        testContextual(m(false, false, true, true, true, false));
-        testContextual(m(false, false, true, true, false, true));
-        testContextual(m(false, false, true, true, false, false));
-        testContextual(m(false, false, true, false, true, true));
-        testContextual(m(false, false, true, false, true, false));
-        testContextual(m(false, false, true, false, false, true));
-        testContextual(m(false, false, true, false, false, false));
-        testContextual(m(false, false, false, true, true, true));
-        testContextual(m(false, false, false, true, true, false));
-        testContextual(m(false, false, false, true, false, true));
-        testContextual(m(false, false, false, true, false, false));
-        testContextual(m(false, false, false, false, true, true));
-        testContextual(m(false, false, false, false, true, false));
-        testContextual(m(false, false, false, false, false, true));
-        testContextual(m(false, false, false, false, false, false));
-    }
 }

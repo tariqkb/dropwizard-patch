@@ -5,8 +5,7 @@ import io.progix.dropwizard.patch.JsonPath;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class JsonPathTest {
 
@@ -21,6 +20,18 @@ public class JsonPathTest {
         acend = new JsonPath(JsonPointer.compile("/a/c/-"));
         ac2 = new JsonPath(JsonPointer.compile("/a/c/2"));
         apound = new JsonPath(JsonPointer.compile("/a/#"));
+    }
+
+    @Test
+    public void sizeTest() {
+        assertEquals(ab.size(), 2);
+        assertEquals(acend.size(), 3);
+        assertEquals(apound.size(), 2);
+        assertEquals(ac2.size(), 3);
+
+        assertEquals(new JsonPath(JsonPointer.compile("/a")).size(), 1);
+        assertEquals(new JsonPath(JsonPointer.compile("/")).size(), 0);
+        assertEquals(new JsonPath(JsonPointer.compile("")).size(), 0);
     }
 
     @Test

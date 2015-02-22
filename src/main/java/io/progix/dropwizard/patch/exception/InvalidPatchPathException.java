@@ -30,6 +30,6 @@ public class InvalidPatchPathException extends RuntimeException {
      * @param path The {@link JsonPath} that was invalid during a patch operation
      */
     public InvalidPatchPathException(JsonPath path) {
-        super("The path '" + path + "' could not be matched or is not modifiable.");
+        super("The path '" + path + "' could not be matched within the resource or the specified path within the resource is not modifiable.");
     }
 }

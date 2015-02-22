@@ -20,7 +20,7 @@ import io.progix.dropwizard.patch.JsonPatchValue;
 import io.progix.dropwizard.patch.JsonPath;
 import io.progix.dropwizard.patch.operations.contextual.ContextualReplaceOperation;
 
-public class JsonReplaceOperation implements ContextualReplaceOperation<String> {
+public class DefaultReplaceOperation implements ContextualReplaceOperation<String> {
 
     @Override
     public void replace(String context, JsonPath path, JsonPatchValue value) {

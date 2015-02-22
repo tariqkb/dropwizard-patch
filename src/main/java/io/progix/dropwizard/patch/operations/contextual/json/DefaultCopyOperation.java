@@ -16,14 +16,13 @@
 
 package io.progix.dropwizard.patch.operations.contextual.json;
 
-import io.progix.dropwizard.patch.JsonPatchValue;
 import io.progix.dropwizard.patch.JsonPath;
-import io.progix.dropwizard.patch.operations.contextual.ContextualTestOperation;
+import io.progix.dropwizard.patch.operations.contextual.ContextualCopyOperation;
 
-public class JsonTestOperation implements ContextualTestOperation<String> {
+public class DefaultCopyOperation implements ContextualCopyOperation<String> {
 
     @Override
-    public boolean test(String context, JsonPath path, JsonPatchValue value) {
-        return false;
+    public void copy(String context, JsonPath from, JsonPath path) {
+
     }
 }

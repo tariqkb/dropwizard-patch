@@ -34,8 +34,10 @@ import java.util.Set;
  * Add this class as the entity for a resource method to support explicit patching. Deserialization is done
  * automatically using {@link JsonPatchDeserializer}.
  * <p/>
- * {@link JsonPatch#apply()} is used to apply all handler logic and should be called before the end of the resource
- * method for patching to occur.
+ * {@link ContextualJsonPatch#apply(T)} is used to apply all handler logic and should be called before the end of the
+ * resource method for patching to occur.
+ * <p/>
+ * This class is useful for patching a copy of given context instead of directly modifying it
  *
  * @param <T> The type of object that will be patched
  */
@@ -81,11 +83,17 @@ public class ContextualJsonPatch<T> {
      * <p/>
      * Calling this method is required for the patch to be applied and is left to the user to decide where and when it
      * will applied in a resource method.
+     * <p/>
+     * Note that the context given will be copied using Jackson and will NOT be modified.
      *
+     * @return a copy of the given context with all patch operation preformed.
      * @throws PatchTestFailedException when a TEST patch operation fails
      * @see JsonPatchOperationType#TEST
      */
-    public void apply(T context) throws PatchTestFailedException {
+    public T apply(T context) throws PatchTestFailedException {
+
+        T copiedContext = PatchUtil.copy(context);
+
         Set<JsonPatchOperationType> unsupportedOperationTypes = new HashSet<>();
 
         for (JsonPatchOperation instruction : instructions) {
@@ -97,7 +105,7 @@ public class ContextualJsonPatch<T> {
                         unsupportedOperationTypes.add(JsonPatchOperationType.ADD);
                     } else {
 
-                        addOperation.add(context, path, new JsonPatchValue(instruction.getValue()));
+                        addOperation.add(copiedContext, path, new JsonPatchValue(instruction.getValue()));
                     }
                     break;
                 case COPY:
@@ -105,7 +113,7 @@ public class ContextualJsonPatch<T> {
                         unsupportedOperationTypes.add(JsonPatchOperationType.COPY);
                     } else {
 
-                        copyOperation.copy(context, new JsonPath(JsonPointer.compile(instruction.getFrom())), path);
+                        copyOperation.copy(copiedContext, new JsonPath(JsonPointer.compile(instruction.getFrom())), path);
                     }
                     break;
                 case MOVE:
@@ -113,7 +121,7 @@ public class ContextualJsonPatch<T> {
                         unsupportedOperationTypes.add(JsonPatchOperationType.MOVE);
                     } else {
 
-                        moveOperation.move(context, new JsonPath(JsonPointer.compile(instruction.getFrom())), path);
+                        moveOperation.move(copiedContext, new JsonPath(JsonPointer.compile(instruction.getFrom())), path);
                     }
                     break;
                 case REMOVE:
@@ -121,22 +129,23 @@ public class ContextualJsonPatch<T> {
                         unsupportedOperationTypes.add(JsonPatchOperationType.REMOVE);
                     } else {
 
-                        removeOperation.remove(context, path);
+                        removeOperation.remove(copiedContext, path);
                     }
                     break;
                 case REPLACE:
                     if (replaceOperation == null) {
                         unsupportedOperationTypes.add(JsonPatchOperationType.REPLACE);
                     } else {
-                        replaceOperation.replace(context, path, new JsonPatchValue(instruction.getValue()));
+
+                        replaceOperation.replace(copiedContext, path, new JsonPatchValue(instruction.getValue()));
                     }
                     break;
                 case TEST:
                     if (testOperation == null) {
-                        //unsupportedOperationTypes.add(JsonPatchOperationType.TEST);
+                        unsupportedOperationTypes.add(JsonPatchOperationType.TEST);
                     } else {
 
-                        boolean success = testOperation.test(context, path, new JsonPatchValue(instruction.getValue()));
+                        boolean success = testOperation.test(copiedContext, path, new JsonPatchValue(instruction.getValue()));
                         if (!success) {
                             throw new PatchTestFailedException(path, instruction.getValue());
                         }
@@ -150,6 +159,8 @@ public class ContextualJsonPatch<T> {
         if (!unsupportedOperationTypes.isEmpty()) {
             throw new PatchOperationNotSupportedException(unsupportedOperationTypes);
         }
+
+        return copiedContext;
     }
 
     /**

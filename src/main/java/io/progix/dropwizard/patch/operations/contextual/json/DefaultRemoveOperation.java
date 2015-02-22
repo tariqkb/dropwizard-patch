@@ -17,12 +17,12 @@
 package io.progix.dropwizard.patch.operations.contextual.json;
 
 import io.progix.dropwizard.patch.JsonPath;
-import io.progix.dropwizard.patch.operations.contextual.ContextualMoveOperation;
+import io.progix.dropwizard.patch.operations.contextual.ContextualRemoveOperation;
 
-public class JsonMoveOperation implements ContextualMoveOperation<String> {
+public class DefaultRemoveOperation implements ContextualRemoveOperation<String> {
 
     @Override
-    public void move(String context, JsonPath from, JsonPath path) {
+    public void remove(String context, JsonPath path) {
 
     }
 }

@@ -16,13 +16,14 @@
 
 package io.progix.dropwizard.patch.operations.contextual.json;
 
+import io.progix.dropwizard.patch.JsonPatchValue;
 import io.progix.dropwizard.patch.JsonPath;
-import io.progix.dropwizard.patch.operations.contextual.ContextualRemoveOperation;
+import io.progix.dropwizard.patch.operations.contextual.ContextualTestOperation;
 
-public class JsonRemoveOperation implements ContextualRemoveOperation<String> {
+public class DefaultTestOperation implements ContextualTestOperation<String> {
 
     @Override
-    public void remove(String context, JsonPath path) {
-
+    public boolean test(String context, JsonPath path, JsonPatchValue value) {
+        return false;
     }
 }

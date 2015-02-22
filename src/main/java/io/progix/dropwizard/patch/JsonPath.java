@@ -33,6 +33,7 @@ public class JsonPath {
     private List<JsonPathProperty> properties;
     private List<JsonPathElement> elements;
     private String pathString;
+    private JsonPointer jsonPointer;
 
     /**
      * Creates the path using a {@link JsonPointer} by iterating through the segments and creating {@link
@@ -46,6 +47,7 @@ public class JsonPath {
      * @see com.fasterxml.jackson.core.JsonPointer
      */
     public JsonPath(JsonPointer pointer) {
+        this.jsonPointer = pointer;
         this.properties = new ArrayList<>();
         this.elements = new ArrayList<>();
         this.pathString = "";
@@ -95,6 +97,13 @@ public class JsonPath {
      */
     public List<JsonPathElement> getElements() {
         return elements;
+    }
+
+    /**
+     * @return the number of segments in this path
+     */
+    public int size() {
+        return getProperties().size();
     }
 
     /**
@@ -198,5 +207,9 @@ public class JsonPath {
     @Override
     public String toString() {
         return pathString;
+    }
+
+    public JsonPointer getJsonPointer() {
+        return jsonPointer;
     }
 }

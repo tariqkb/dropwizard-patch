@@ -27,12 +27,9 @@ repositories {
 }
 
 dependencies {
-    compile 'io.dropwizard:dropwizard-jackson:0.7.1'
-    compile 'io.dropwizard:dropwizard-testing:0.7.1'
-    testCompile 'junit:junit:4.12'
-//    compile 'com.fasterxml.jackson.core:jackson-core:2.5.0'
-//    compile 'com.fasterxml.jackson.core:jackson-databind:2.5.0'
-//    testCompile 'junit:junit:4.12'
+    compile 'io.dropwizard:dropwizard-core:0.8.0-rc3'
+    compile 'io.dropwizard:dropwizard-auth:0.8.0-rc3'
+    testCompile 'io.dropwizard:dropwizard-testing:0.8.0-rc3'
 }
 
 test {

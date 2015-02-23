@@ -23,12 +23,15 @@ archivesBaseName = "dropwizard-patch"
 version = "0.1.0"
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
     compile 'io.dropwizard:dropwizard-core:0.8.0-rc3'
     compile 'io.dropwizard:dropwizard-auth:0.8.0-rc3'
+    compile 'io.progix.jackson:jackson-patch:0.1.0'
+
     testCompile 'io.dropwizard:dropwizard-testing:0.8.0-rc3'
 }
 

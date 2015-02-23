@@ -20,7 +20,7 @@
 package io.progix.dropwizard.patch.exception;
 
 import io.progix.dropwizard.patch.JsonPatchOperationType;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Set;
 

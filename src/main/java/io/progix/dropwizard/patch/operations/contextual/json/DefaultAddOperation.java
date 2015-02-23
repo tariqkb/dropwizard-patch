@@ -16,50 +16,30 @@
 
 package io.progix.dropwizard.patch.operations.contextual.json;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.progix.dropwizard.patch.JsonPatchValue;
 import io.progix.dropwizard.patch.JsonPath;
-import io.progix.dropwizard.patch.exception.InvalidPatchPathException;
 import io.progix.dropwizard.patch.operations.contextual.ContextualAddOperation;
-
-import java.io.IOException;
+import io.progix.jackson.JsonPatchInstruction;
+import io.progix.jackson.operations.AddOperation;
 
 public class DefaultAddOperation<T> implements ContextualAddOperation<T> {
 
     private final ObjectMapper mapper;
 
-    public DefaultAddOperation(ObjectMapper mapper,) {
+    public DefaultAddOperation(ObjectMapper mapper) {
         this.mapper = mapper;
     }
 
     @Override
-    public void add(T context, JsonPath path, JsonPatchValue value) {
-        JsonNode root;
-        try {
-            JsonParser jp = mapper.getFactory().createParser(mapper.writeValueAsString(context));
-            root = jp.getCodec().readTree(jp);
-        } catch (IOException e) {
-            throw new RuntimeException("An error occurred while serializing/deserializing given context. See stack trace for more information.", e);
-        }
+    public T add(T context, JsonPath path, JsonPatchValue value) {
+        JsonNode contextNode = mapper.convertValue(context, JsonNode.class);
 
-        int end = path.size() - 1;
-        if (path.element(end).exists()) {
+        AddOperation
+                .apply(new JsonPatchInstruction(JsonPatchInstruction.JsonPatchOperationType.ADD, path.getJsonPointer(),
+                        value.getNode()), contextNode);
 
-        }
-
-        JsonNode targetNode = root.at(path.getJsonPointer());
-        if (targetNode.isMissingNode()) {
-            throw new InvalidPatchPathException(path);
-        }
-
-        if (targetNode.isArray()) {
-            targetNode.
-        } else if (targetNode.isObject()) {
-
-        } else {
-            targetNode.is
-        }
+        JsonNode contextNode = mapper.convertValue(context, JsonNode.class);
     }
 }

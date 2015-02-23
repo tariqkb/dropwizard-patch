@@ -35,7 +35,7 @@ public class DefaultJsonPatch<T> extends ContextualJsonPatch<T> {
         super(instructions);
         this.mapper = Jackson.newObjectMapper();
 
-        setAdd(new DefaultAddOperation<T>(mapper, factory));
+        setAdd(new DefaultAddOperation<T>(mapper));
     }
 
 }

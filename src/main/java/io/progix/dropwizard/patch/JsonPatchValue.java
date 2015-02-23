@@ -16,27 +16,28 @@
 
 package io.progix.dropwizard.patch;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.dropwizard.jackson.Jackson;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Wrapper class for values passed in as the value key in a JSON Patch document as outlined in RFC6902.
+ * Wrapper class for value passed in as the value key in a JSON Patch document as outlined in RFC6902.
  * <p/>
  * This class uses Jackson to map the JSON objects from the patch document into expected classes
  */
 public class JsonPatchValue {
 
-    private List<? extends Object> values;
+    private JsonNode value;
 
     /**
-     * Constructs an instance using a list of values
+     * Constructs an instance using a {@link JsonNode}
      *
-     * @param values the Object values
+     * @param value the {@link JsonNode} representing the value in a patch instruction
      */
-    JsonPatchValue(List<? extends Object> values) {
-        this.values = values;
+    JsonPatchValue(JsonNode value) {
+        this.value = value;
     }
 
     /**
@@ -45,15 +46,19 @@ public class JsonPatchValue {
      * @param clazz The class to cast the elements of this list to
      * @param <T>   The class type of the class param
      *
-     * @return A list of values casted and mapped to the specified class
+     * @return A list of value casted and mapped to the specified class
      */
     public <T> List<T> many(Class<T> clazz) {
         List<T> mappedValues = new ArrayList<>();
-        for (Object o : values) {
-            if (o == null) {
-                mappedValues.add(null);
+        if (value.isArray()) {
+            for (JsonNode valueElement : value) {
+                if (valueElement == null) {
+                    mappedValues.add(null);
+                }
+                mappedValues.add(Jackson.newObjectMapper().convertValue(valueElement, clazz));
             }
-            mappedValues.add(Jackson.newObjectMapper().convertValue(o, clazz));
+        } else {
+            mappedValues.add(Jackson.newObjectMapper().convertValue(value, clazz));
         }
         return mappedValues;
     }
@@ -69,10 +74,13 @@ public class JsonPatchValue {
      * @throws IndexOutOfBoundsException if there is more than one element in the list or if the list is empty.
      */
     public <T> T one(Class<T> clazz) {
-        if (values.get(0) == null) {
-            return null;
+        if (value.isArray()) {
+            throw new UnsupportedOperationException("Cannot convert a list of values into one. See many(Class");
         }
-        return Jackson.newObjectMapper().convertValue(values.get(0), clazz);
+        return Jackson.newObjectMapper().convertValue(value, clazz);
     }
 
+    public JsonNode getNode() {
+        return value;
+    }
 }

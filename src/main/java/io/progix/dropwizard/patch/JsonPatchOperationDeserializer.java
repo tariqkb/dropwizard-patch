@@ -24,9 +24,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.UntypedObjectDeserializer;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Custom Jackson deserializer for patch operations in a patch document.
@@ -66,31 +63,8 @@ public class JsonPatchOperationDeserializer extends JsonDeserializer<JsonPatchOp
             from = fromNode.asText();
         }
 
-        List<Object> values = null;
         JsonNode valueNode = node.get("value");
-        if (valueNode != null) {
-            values = new ArrayList<>();
-            if (valueNode.isArray()) {
-                Iterator<JsonNode> iterator = valueNode.elements();
-                while (iterator.hasNext()) {
-                    JsonNode elementNode = iterator.next();
-                    JsonParser p = elementNode.traverse();
-                    if (!p.hasCurrentToken()) {
-                        p.nextToken();
-                    }
-                    Object element = untypedObjectDeserializer.deserialize(p, ctxt);
-                    values.add(element);
-                }
-            } else {
-                JsonParser p = valueNode.traverse();
-                if (!p.hasCurrentToken()) {
-                    p.nextToken();
-                }
-                Object value = untypedObjectDeserializer.deserialize(p, ctxt);
-                values.add(value);
-            }
-        }
 
-        return new JsonPatchOperation(operation, path, values, from);
+        return new JsonPatchOperation(operation, path, valueNode, from);
     }
 }

@@ -22,6 +22,7 @@ import io.progix.dropwizard.patch.operations.AddOperation;
 
 /**
  * @param <T> the type of the object this add operation should be preformed on
+ *
  * @see AddOperation
  */
 public interface ContextualAddOperation<T> {
@@ -30,8 +31,11 @@ public interface ContextualAddOperation<T> {
      * @param context The context this add operation should be preformed on
      * @param path    The {@link JsonPath} for the location the value should be added.
      * @param value   the {@link JsonPatchValue} for the value to be added.
+     *
+     * @return the modified context
+     *
      * @see AddOperation
      */
-    public void add(T context, JsonPath path, JsonPatchValue value);
+    public T add(T context, JsonPath path, JsonPatchValue value);
 
 }

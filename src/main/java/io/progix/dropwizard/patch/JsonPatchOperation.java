@@ -17,10 +17,10 @@
 package io.progix.dropwizard.patch;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * Object representing single operation within a PATCH document as defined in RFC6902.
@@ -44,10 +44,10 @@ public class JsonPatchOperation {
 
     @NotNull
     private String path;
-    private List<Object> value;
+    private JsonNode value;
     private String from;
 
-    public JsonPatchOperation(JsonPatchOperationType operation, String path, List<Object> value, String from) {
+    public JsonPatchOperation(JsonPatchOperationType operation, String path, JsonNode value, String from) {
         this.operation = operation;
         this.path = path;
         this.value = value;
@@ -73,7 +73,7 @@ public class JsonPatchOperation {
      *
      * @return a List of values this operation may contain
      */
-    public List<Object> getValue() {
+    public JsonNode getValue() {
         return value;
     }
 

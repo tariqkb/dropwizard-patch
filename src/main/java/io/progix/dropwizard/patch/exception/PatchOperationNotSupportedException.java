@@ -19,8 +19,8 @@
  */
 package io.progix.dropwizard.patch.exception;
 
+import com.google.common.base.Joiner;
 import io.progix.dropwizard.patch.JsonPatchOperationType;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Set;
 
@@ -36,7 +36,7 @@ public class PatchOperationNotSupportedException extends RuntimeException {
      *                   resource.
      */
     public PatchOperationNotSupportedException(Set<JsonPatchOperationType> operations) {
-        super("The PATCH operations " + StringUtils.join(operations, ',') + " is not supported for this resource.");
+        super("The PATCH operations " + Joiner.on(',').join(operations) + " is not supported for this resource.");
         this.operations = operations;
     }
 

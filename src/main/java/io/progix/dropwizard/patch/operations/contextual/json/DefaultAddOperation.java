@@ -24,22 +24,17 @@ import io.progix.dropwizard.patch.operations.contextual.ContextualAddOperation;
 import io.progix.jackson.JsonPatchInstruction;
 import io.progix.jackson.operations.AddOperation;
 
+
 public class DefaultAddOperation<T> implements ContextualAddOperation<T> {
 
-    private final ObjectMapper mapper;
+  private final ObjectMapper mapper;
 
-    public DefaultAddOperation(ObjectMapper mapper) {
-        this.mapper = mapper;
-    }
+  public DefaultAddOperation(ObjectMapper mapper) {
+    this.mapper = mapper;
+  }
 
-    @Override
-    public T add(T context, JsonPath path, JsonPatchValue value) {
-        JsonNode contextNode = mapper.convertValue(context, JsonNode.class);
+  @Override
+  public void add(T context, JsonPath path, JsonPatchValue value) {
 
-        AddOperation
-                .apply(new JsonPatchInstruction(JsonPatchInstruction.JsonPatchOperationType.ADD, path.getJsonPointer(),
-                        value.getNode()), contextNode);
-
-        JsonNode contextNode = mapper.convertValue(context, JsonNode.class);
-    }
+  }
 }

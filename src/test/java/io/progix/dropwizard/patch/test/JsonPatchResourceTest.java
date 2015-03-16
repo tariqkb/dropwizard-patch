@@ -16,14 +16,18 @@
 
 package io.progix.dropwizard.patch.test;
 
+import com.fasterxml.jackson.core.JsonPointer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.dropwizard.jackson.Jackson;
 import io.dropwizard.testing.junit.ResourceTestRule;
-import io.progix.dropwizard.patch.JsonPatchOperation;
-import io.progix.dropwizard.patch.JsonPatchOperationType;
 import io.progix.dropwizard.patch.Pet;
 import io.progix.dropwizard.patch.User;
 import io.progix.dropwizard.patch.UserResource;
 import io.progix.dropwizard.patch.UserStore;
 import io.progix.dropwizard.patch.exception.PatchTestFailedExceptionMapper;
+import io.progix.jackson.JsonPatchOperation;
+import io.progix.jackson.JsonPatchOperationType;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,6 +48,8 @@ public class JsonPatchResourceTest {
     private String type;
     private UserStore dao = new UserStore();
 
+    private ObjectMapper mapper = Jackson.newObjectMapper();
+
     @Rule
     public ResourceTestRule resources = ResourceTestRule.builder().addProvider(PatchTestFailedExceptionMapper.class).
             addResource(new UserResource(dao)).build();
@@ -63,7 +69,8 @@ public class JsonPatchResourceTest {
         Pet bird = new Pet(3, 4, Arrays.asList("Nick"));
 
         List<Object> pets = new ArrayList<Object>(Arrays.asList(bird));
-        JsonPatchOperation addPetInstruction = new JsonPatchOperation(JsonPatchOperationType.ADD, "/pets", pets, "");
+        JsonPatchOperation addPetInstruction = new JsonPatchOperation(JsonPatchOperationType.ADD,
+                JsonPointer.compile("/pets"), mapper.convertValue(pets, JsonNode.class));
 
         resources.client().target("/users/" + type + "0").request(MediaType.APPLICATION_JSON)
                 .method("PATCH", Entity.json(Arrays.asList(addPetInstruction)));
@@ -76,7 +83,8 @@ public class JsonPatchResourceTest {
 
     @Test
     public void testCopy() {
-        JsonPatchOperation copyPetInstruction = new JsonPatchOperation(JsonPatchOperationType.COPY, "/pets/1", null, "/pets/0");
+        JsonPatchOperation copyPetInstruction = new JsonPatchOperation(JsonPatchOperationType.COPY,
+                JsonPointer.compile("/pets/1"), JsonPointer.compile("/pets/0"));
 
         resources.client().target("/users/" + type + "0").request(MediaType.APPLICATION_JSON)
                 .method("PATCH", Entity.json(Arrays.asList(copyPetInstruction)));
@@ -90,7 +98,8 @@ public class JsonPatchResourceTest {
 
     @Test
     public void testMove() {
-        JsonPatchOperation movePetInstruction = new JsonPatchOperation(JsonPatchOperationType.MOVE, "/pets/1", null, "/pets/0");
+        JsonPatchOperation movePetInstruction = new JsonPatchOperation(JsonPatchOperationType.MOVE,
+                JsonPointer.compile("/pets/1"), JsonPointer.compile("/pets/0"));
 
         resources.client().target("/users/" + type + "1").request(MediaType.APPLICATION_JSON)
                 .method("PATCH", Entity.json(Arrays.asList(movePetInstruction)));
@@ -103,9 +112,10 @@ public class JsonPatchResourceTest {
 
     @Test
     public void testRemove() {
-        JsonPatchOperation removePetInstruction = new JsonPatchOperation(JsonPatchOperationType.REMOVE, "/pets/0", null, "");
-        JsonPatchOperation removeEmailInstruction = new JsonPatchOperation(JsonPatchOperationType.REMOVE, "/emailAddresses/0", null,
-                "");
+        JsonPatchOperation removePetInstruction = new JsonPatchOperation(JsonPatchOperationType.REMOVE,
+                JsonPointer.compile("/pets/0"));
+        JsonPatchOperation removeEmailInstruction = new JsonPatchOperation(JsonPatchOperationType.REMOVE,
+                JsonPointer.compile("/emailAddresses/0"));
 
         resources.client().target("/users/" + type + "0").request(MediaType.APPLICATION_JSON)
                 .method("PATCH", Entity.json(Arrays.asList(removePetInstruction, removeEmailInstruction)));
@@ -119,15 +129,15 @@ public class JsonPatchResourceTest {
         Pet bird = new Pet(3, 4, Arrays.asList("Nick"));
         Pet cat = new Pet(0, 2, new ArrayList<>(Arrays.asList("Larry, Mogget")));
 
-        JsonPatchOperation replacePetInstruction = new JsonPatchOperation(JsonPatchOperationType.REPLACE, "/pets/1",
-                new ArrayList<Object>(Arrays.asList(bird)), "");
-        JsonPatchOperation replaceNameInstruction = new JsonPatchOperation(JsonPatchOperationType.REPLACE, "/name",
-                new ArrayList<Object>(Arrays.asList("Allison")), "");
-        JsonPatchOperation replaceEmailInstruction = new JsonPatchOperation(JsonPatchOperationType.REPLACE, "/emailAddresses/0",
-                new ArrayList<Object>(Arrays.asList("allison@beeb.org")), "");
+        JsonPatchOperation replacePetInstruction = new JsonPatchOperation(JsonPatchOperationType.REPLACE,
+                JsonPointer.compile("/pets/1"), mapper.convertValue(bird, JsonNode.class));
+        JsonPatchOperation replaceNameInstruction = new JsonPatchOperation(JsonPatchOperationType.REPLACE,
+                JsonPointer.compile("/name"), mapper.convertValue("Allison", JsonNode.class));
+        JsonPatchOperation replaceEmailInstruction = new JsonPatchOperation(JsonPatchOperationType.REPLACE,
+                JsonPointer.compile("/emailAddresses/0"), mapper.convertValue("allison@beeb.org", JsonNode.class));
 
-        resources.client().target("/users/" + type + "1").request(MediaType.APPLICATION_JSON)
-                .method("PATCH", Entity.json(Arrays.asList(replacePetInstruction, replaceNameInstruction, replaceEmailInstruction)));
+        resources.client().target("/users/" + type + "1").request(MediaType.APPLICATION_JSON).method("PATCH",
+                Entity.json(Arrays.asList(replacePetInstruction, replaceNameInstruction, replaceEmailInstruction)));
 
         User user = new User(1, "Allison", new ArrayList<>(Arrays.asList("allison@beeb.org")),
                 new ArrayList<>(Arrays.asList(cat, bird)));
@@ -139,15 +149,15 @@ public class JsonPatchResourceTest {
     public void testTest() {
         Pet dog = new Pet(1, 9, new ArrayList<>(Arrays.asList("Jonathan")));
 
-        JsonPatchOperation testPetInstruction = new JsonPatchOperation(JsonPatchOperationType.TEST, "/pets/1",
-                new ArrayList<Object>(Arrays.asList(dog)), "");
-        JsonPatchOperation testNameInstruction = new JsonPatchOperation(JsonPatchOperationType.TEST, "/name",
-                new ArrayList<Object>(Arrays.asList("Alli")), "");
-        JsonPatchOperation testEmailInstruction = new JsonPatchOperation(JsonPatchOperationType.TEST, "/emailAddresses/0",
-                new ArrayList<Object>(Arrays.asList("alli@beeb.com")), "");
+        JsonPatchOperation testPetInstruction = new JsonPatchOperation(JsonPatchOperationType.TEST,
+                JsonPointer.compile("/pets/1"), mapper.convertValue(dog, JsonNode.class));
+        JsonPatchOperation testNameInstruction = new JsonPatchOperation(JsonPatchOperationType.TEST,
+                JsonPointer.compile("/name"), mapper.convertValue("Alli", JsonNode.class));
+        JsonPatchOperation testEmailInstruction = new JsonPatchOperation(JsonPatchOperationType.TEST,
+                JsonPointer.compile("/emailAddresses/0"), mapper.convertValue("alli@beeb.com", JsonNode.class));
 
-        resources.client().target("/users/" + type + "1").request(MediaType.APPLICATION_JSON)
-                .method("PATCH", Entity.json(Arrays.asList(testPetInstruction, testNameInstruction, testEmailInstruction)));
+        resources.client().target("/users/" + type + "1").request(MediaType.APPLICATION_JSON).method("PATCH",
+                Entity.json(Arrays.asList(testPetInstruction, testNameInstruction, testEmailInstruction)));
 
     }
 

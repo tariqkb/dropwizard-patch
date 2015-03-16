@@ -6,6 +6,7 @@ import io.progix.dropwizard.patch.*;
 import io.progix.dropwizard.patch.exception.PatchOperationNotSupportedException;
 import io.progix.dropwizard.patch.operations.*;
 import io.progix.dropwizard.patch.operations.contextual.*;
+import io.progix.jackson.JsonPatchOperationType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -121,40 +122,45 @@ public class JsonPatchOperationTest {
         if (includeMap.get(JsonPatchOperationType.ADD)) {
             contextualJsonPatch.setAdd(new ContextualAddOperation<User>() {
                 @Override
-                public void add(User context, JsonPath path, JsonPatchValue value) {
+                public User add(User context, JsonPath path, JsonPatchValue value) {
                     didMap.put(JsonPatchOperationType.ADD, true);
+                    return context;
                 }
             });
         }
         if (includeMap.get(JsonPatchOperationType.COPY)) {
             contextualJsonPatch.setCopy(new ContextualCopyOperation<User>() {
                 @Override
-                public void copy(User context, JsonPath from, JsonPath path) {
+                public User copy(User context, JsonPath from, JsonPath path) {
                     didMap.put(JsonPatchOperationType.COPY, true);
+                    return context;
                 }
             });
         }
         if (includeMap.get(JsonPatchOperationType.MOVE)) {
             contextualJsonPatch.setMove(new ContextualMoveOperation<User>() {
                 @Override
-                public void move(User context, JsonPath from, JsonPath path) {
+                public User move(User context, JsonPath from, JsonPath path) {
                     didMap.put(JsonPatchOperationType.MOVE, true);
+                    return context;
                 }
             });
         }
         if (includeMap.get(JsonPatchOperationType.REMOVE)) {
             contextualJsonPatch.setRemove(new ContextualRemoveOperation<User>() {
                 @Override
-                public void remove(User context, JsonPath path) {
+                public User remove(User context, JsonPath path) {
                     didMap.put(JsonPatchOperationType.REMOVE, true);
+                    return context;
                 }
             });
         }
         if (includeMap.get(JsonPatchOperationType.REPLACE)) {
             contextualJsonPatch.setReplace(new ContextualReplaceOperation<User>() {
                 @Override
-                public void replace(User context, JsonPath path, JsonPatchValue value) {
+                public User replace(User context, JsonPath path, JsonPatchValue value) {
                     didMap.put(JsonPatchOperationType.REPLACE, true);
+                    return context;
                 }
             });
         }

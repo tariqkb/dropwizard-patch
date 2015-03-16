@@ -17,11 +17,12 @@
 package io.progix.dropwizard.patch;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.progix.dropwizard.patch.exception.PatchOperationNotSupportedException;
 import io.progix.dropwizard.patch.exception.PatchTestFailedException;
 import io.progix.dropwizard.patch.operations.contextual.*;
+import io.progix.jackson.JsonPatchOperation;
+import io.progix.jackson.JsonPatchOperationType;
 
 import java.util.HashSet;
 import java.util.List;
@@ -44,20 +45,20 @@ import java.util.Set;
 @JsonDeserialize(using = ContextualJsonPatchDeserializer.class)
 public class ContextualJsonPatch<T> {
 
-    private List<JsonPatchOperation> instructions;
+    protected List<JsonPatchOperation> instructions;
 
     @JsonIgnore
-    private ContextualAddOperation<T> addOperation;
+    protected ContextualAddOperation<T> addOperation;
     @JsonIgnore
-    private ContextualRemoveOperation<T> removeOperation;
+    protected ContextualRemoveOperation<T> removeOperation;
     @JsonIgnore
-    private ContextualReplaceOperation<T> replaceOperation;
+    protected ContextualReplaceOperation<T> replaceOperation;
     @JsonIgnore
-    private ContextualMoveOperation<T> moveOperation;
+    protected ContextualMoveOperation<T> moveOperation;
     @JsonIgnore
-    private ContextualCopyOperation<T> copyOperation;
+    protected ContextualCopyOperation<T> copyOperation;
     @JsonIgnore
-    private ContextualTestOperation<T> testOperation;
+    protected ContextualTestOperation<T> testOperation;
 
     /**
      * Constructs an instance using a list of {@link JsonPatchOperation}
@@ -97,7 +98,7 @@ public class ContextualJsonPatch<T> {
         Set<JsonPatchOperationType> unsupportedOperationTypes = new HashSet<>();
 
         for (JsonPatchOperation instruction : instructions) {
-            JsonPath path = new JsonPath(JsonPointer.compile(instruction.getPath()));
+            JsonPath path = new JsonPath(instruction.getPath());
 
             switch (instruction.getOperation()) {
                 case ADD:
@@ -113,7 +114,7 @@ public class ContextualJsonPatch<T> {
                         unsupportedOperationTypes.add(JsonPatchOperationType.COPY);
                     } else {
 
-                        copyOperation.copy(copiedContext, new JsonPath(JsonPointer.compile(instruction.getFrom())), path);
+                        copyOperation.copy(copiedContext, new JsonPath(instruction.getFrom()), path);
                     }
                     break;
                 case MOVE:
@@ -121,7 +122,7 @@ public class ContextualJsonPatch<T> {
                         unsupportedOperationTypes.add(JsonPatchOperationType.MOVE);
                     } else {
 
-                        moveOperation.move(copiedContext, new JsonPath(JsonPointer.compile(instruction.getFrom())), path);
+                        moveOperation.move(copiedContext, new JsonPath(instruction.getFrom()), path);
                     }
                     break;
                 case REMOVE:

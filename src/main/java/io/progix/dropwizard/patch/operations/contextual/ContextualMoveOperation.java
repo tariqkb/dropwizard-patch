@@ -31,5 +31,5 @@ public interface ContextualMoveOperation<T> {
      * @param path    the {@link JsonPath} for the location the value should be moved to.
      * @see MoveOperation
      */
-    public void move(T context, JsonPath from, JsonPath path);
+    public T move(T context, JsonPath from, JsonPath path);
 }

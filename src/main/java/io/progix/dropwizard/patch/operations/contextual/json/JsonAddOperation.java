@@ -16,13 +16,22 @@
 
 package io.progix.dropwizard.patch.operations.contextual.json;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import io.progix.dropwizard.patch.JsonPatchValue;
 import io.progix.dropwizard.patch.JsonPath;
-import io.progix.dropwizard.patch.operations.contextual.ContextualRemoveOperation;
+import io.progix.dropwizard.patch.operations.contextual.ContextualAddOperation;
+import io.progix.jackson.JsonPatchOperation;
+import io.progix.jackson.JsonPatchOperationType;
+import io.progix.jackson.operations.AddOperation;
 
-public class DefaultRemoveOperation implements ContextualRemoveOperation<String> {
+public class JsonAddOperation implements ContextualAddOperation<JsonNode> {
 
     @Override
-    public void remove(String context, JsonPath path) {
+    public JsonNode add(JsonNode context, JsonPath path, JsonPatchValue value) {
+        JsonPatchOperation instruction = new JsonPatchOperation(JsonPatchOperationType.ADD,
+                path.getJsonPointer(), value.getNode());
+
+        return AddOperation.apply(instruction, context);
 
     }
 }

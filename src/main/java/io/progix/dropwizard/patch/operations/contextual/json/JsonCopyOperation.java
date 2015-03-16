@@ -16,13 +16,20 @@
 
 package io.progix.dropwizard.patch.operations.contextual.json;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.progix.dropwizard.patch.JsonPath;
-import io.progix.dropwizard.patch.operations.contextual.ContextualMoveOperation;
+import io.progix.dropwizard.patch.operations.contextual.ContextualCopyOperation;
+import io.progix.jackson.JsonPatchOperation;
+import io.progix.jackson.JsonPatchOperationType;
+import io.progix.jackson.operations.CopyOperation;
 
-public class DefaultMoveOperation implements ContextualMoveOperation<String> {
+public class JsonCopyOperation implements ContextualCopyOperation<JsonNode> {
 
     @Override
-    public void move(String context, JsonPath from, JsonPath path) {
+    public JsonNode copy(JsonNode context, JsonPath from, JsonPath path) {
+        JsonPatchOperation instruction = new JsonPatchOperation(JsonPatchOperationType.COPY,
+                path.getJsonPointer(), from.getJsonPointer());
 
+        return CopyOperation.apply(instruction, context);
     }
 }

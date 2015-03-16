@@ -17,11 +17,12 @@
 package io.progix.dropwizard.patch;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.progix.dropwizard.patch.exception.PatchOperationNotSupportedException;
 import io.progix.dropwizard.patch.exception.PatchTestFailedException;
 import io.progix.dropwizard.patch.operations.*;
+import io.progix.jackson.JsonPatchOperation;
+import io.progix.jackson.JsonPatchOperationType;
 
 import java.util.HashSet;
 import java.util.List;
@@ -60,7 +61,7 @@ public class JsonPatch {
      *
      * @param instructions A list of {@link JsonPatchOperation}
      */
-    public JsonPatch(List<JsonPatchOperation> instructions) {
+    public JsonPatch(List<io.progix.jackson.JsonPatchOperation> instructions) {
         this.instructions = instructions;
     }
 
@@ -87,7 +88,7 @@ public class JsonPatch {
         Set<JsonPatchOperationType> unsupportedOperationTypes = new HashSet<>();
 
         for (JsonPatchOperation instruction : instructions) {
-            JsonPath path = new JsonPath(JsonPointer.compile(instruction.getPath()));
+            JsonPath path = new JsonPath(instruction.getPath());
 
             switch (instruction.getOperation()) {
                 case ADD:
@@ -103,7 +104,7 @@ public class JsonPatch {
                         unsupportedOperationTypes.add(JsonPatchOperationType.COPY);
                     } else {
 
-                        copyOperation.copy(new JsonPath(JsonPointer.compile(instruction.getFrom())), path);
+                        copyOperation.copy(new JsonPath(instruction.getFrom()), path);
                     }
                     break;
                 case MOVE:
@@ -111,7 +112,7 @@ public class JsonPatch {
                         unsupportedOperationTypes.add(JsonPatchOperationType.MOVE);
                     } else {
 
-                        moveOperation.move(new JsonPath(JsonPointer.compile(instruction.getFrom())), path);
+                        moveOperation.move(new JsonPath(instruction.getFrom()), path);
                     }
                     break;
                 case REMOVE:

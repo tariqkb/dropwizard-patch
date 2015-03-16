@@ -32,6 +32,6 @@ public interface ContextualReplaceOperation<T> {
      * @param value   The {@link JsonPatchValue} that replaces the location specified by the path parameter
      * @see ReplaceOperation
      */
-    public void replace(T context, JsonPath path, JsonPatchValue value);
+    public T replace(T context, JsonPath path, JsonPatchValue value);
 
 }

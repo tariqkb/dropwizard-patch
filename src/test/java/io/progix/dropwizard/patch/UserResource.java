@@ -16,6 +16,8 @@
 
 package io.progix.dropwizard.patch;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.dropwizard.jackson.Jackson;
 import io.dropwizard.jersey.PATCH;
 import io.progix.dropwizard.patch.exception.InvalidPatchPathException;
 import io.progix.dropwizard.patch.operations.*;
@@ -27,8 +29,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Path("/users")
@@ -38,6 +38,7 @@ public class UserResource {
 
     private static final Logger logger = Logger.getLogger(UserResource.class);
 
+    private ObjectMapper mapper = Jackson.newObjectMapper();
     private UserStore dao;
 
     public UserResource(UserStore store) {
@@ -57,7 +58,7 @@ public class UserResource {
         request.setAdd(new ContextualAddOperation<User>() {
 
             @Override
-            public void add(User user, JsonPath path, JsonPatchValue value) {
+            public User add(User user, JsonPath path, JsonPatchValue value) {
                 if (path.property(0).exists()) {
                     if (path.property(0).is("pets")) {
                         if (path.element(1).exists() && path.endsAt(1)) {
@@ -88,12 +89,14 @@ public class UserResource {
                 } else {
                     throw new InvalidPatchPathException(path);
                 }
+
+                return user;
             }
         });
 
         request.setCopy(new ContextualCopyOperation<User>() {
             @Override
-            public void copy(User user, JsonPath from, JsonPath path) {
+            public User copy(User user, JsonPath from, JsonPath path) {
                 if (from.property(0).is("pets") && path.property(0).is("pets") && from.endsAt(1) && path.endsAt(1)) {
                     if (from.element(1).exists() && path.element(1).exists()) {
                         Pet pet = user.getPets().get(from.element(1).val());
@@ -112,12 +115,13 @@ public class UserResource {
                 } else {
                     throw new InvalidPatchPathException(path);
                 }
+                return user;
             }
         });
 
         request.setMove(new ContextualMoveOperation<User>() {
             @Override
-            public void move(User user, JsonPath from, JsonPath path) {
+            public User move(User user, JsonPath from, JsonPath path) {
                 if (from.property(0).is("pets") && path.property(0).is("pets")) {
                     if (from.element(1).exists() && path.element(1).exists() && from.endsAt(1) && path.endsAt(1)) {
                         int fromIndex = from.element(1).val();
@@ -142,12 +146,13 @@ public class UserResource {
                 } else {
                     throw new InvalidPatchPathException(path);
                 }
+                return user;
             }
         });
 
         request.setRemove(new ContextualRemoveOperation<User>() {
             @Override
-            public void remove(User user, JsonPath path) {
+            public User remove(User user, JsonPath path) {
                 if (path.property(0).is("pets") && path.element(1).exists() && path.endsAt(1)) {
                     user.getPets().remove(path.element(1).val());
                 } else if (path.property(0).is("emailAddresses") && path.element(1).exists() && path.endsAt(1)) {
@@ -155,12 +160,13 @@ public class UserResource {
                 } else {
                     throw new InvalidPatchPathException(path);
                 }
+                return user;
             }
         });
 
         request.setReplace(new ContextualReplaceOperation<User>() {
             @Override
-            public void replace(User user, JsonPath path, JsonPatchValue value) {
+            public User replace(User user, JsonPath path, JsonPatchValue value) {
                 if (path.property(0).exists()) {
                     if (path.property(0).is("pets")) {
                         if (path.element(1).exists() && path.endsAt(1)) {
@@ -187,6 +193,8 @@ public class UserResource {
                 } else {
                     throw new InvalidPatchPathException(path);
                 }
+
+                return user;
             }
         });
 
@@ -217,8 +225,8 @@ public class UserResource {
         });
 
         User user = dao.getUsers().get(id);
-        request.apply(user);
-
+        User patchedUser = request.apply(user);
+        dao.getUsers().set(id, patchedUser);
     }
 
     @PATCH

@@ -35,6 +35,8 @@ public class JsonPath {
     private String pathString;
     private JsonPointer jsonPointer;
 
+    private int size;
+
     /**
      * Creates the path using a {@link JsonPointer} by iterating through the segments and creating {@link
      * JsonPathProperty} and {@link JsonPathElement} for each segment.
@@ -44,6 +46,7 @@ public class JsonPath {
      * If a given segment does not match as a Integer index, an empty {@link JsonPathElement} is created.
      *
      * @param pointer
+     *
      * @see com.fasterxml.jackson.core.JsonPointer
      */
     public JsonPath(JsonPointer pointer) {
@@ -54,8 +57,13 @@ public class JsonPath {
 
         while (pointer != null) {
 
+            if (pointer.getMatchingProperty() != null && !pointer.getMatchingProperty().isEmpty()) {
+                size++;
+            }
+
             //  Keep in mind, Jackson's implementation of JsonPointer allows all segments to be properties
-            if (pointer.mayMatchProperty() && !pointer.mayMatchElement() && !pointer.getMatchingProperty().isEmpty() && !pointer.getMatchingProperty().equals("-")) {
+            if (pointer.mayMatchProperty() && !pointer.mayMatchElement() && !pointer.getMatchingProperty()
+                    .isEmpty() && !pointer.getMatchingProperty().equals("-")) {
                 properties.add(new JsonPathProperty(pointer.getMatchingProperty()));
 
                 this.pathString += "/" + pointer.getMatchingProperty();
@@ -103,7 +111,7 @@ public class JsonPath {
      * @return the number of segments in this path
      */
     public int size() {
-        return getProperties().size();
+        return size;
     }
 
     /**
@@ -116,6 +124,7 @@ public class JsonPath {
      * array element.
      *
      * @param path String path to check
+     *
      * @return true if the path is given is equivalent to this JsonPath, false otherwise.
      */
     public boolean is(String path) {
@@ -150,7 +159,8 @@ public class JsonPath {
                     return false;
                 }
             } else if (element(i).exists()) {
-                if (token.equals("#") || (token.equals("-") && element(i).isEndOfArray()) || String.valueOf(element(i).val()).equals(token)) {
+                if (token.equals("#") || (token.equals("-") && element(i).isEndOfArray()) || String
+                        .valueOf(element(i).val()).equals(token)) {
                     return true;
                 }
             } else {
@@ -169,11 +179,13 @@ public class JsonPath {
      * Ex. If the path is "/a/b/c", endsAt(2) will return true while endsAt(1) and endsAt(3) will return false
      *
      * @param index The index to test if this path ends
+     *
      * @return true if the index provided is the last segment to contain data, false otherwise
      */
     public boolean endsAt(int index) {
         int next = index + 1;
-        return (property(index).exists() || element(index).exists()) && !property(next).exists() && !element(next).exists();
+        return (property(index).exists() || element(index).exists()) && !property(next).exists() && !element(next)
+                .exists();
     }
 
     /**
@@ -181,6 +193,7 @@ public class JsonPath {
      * String property, will return a special object who's {@link JsonPathProperty#exists()} will return false
      *
      * @param index the segment index to retrieve
+     *
      * @return a {@link JsonPathProperty} for this index
      */
     public JsonPathProperty property(int index) {
@@ -195,6 +208,7 @@ public class JsonPath {
      * Integer property, will return a special object who's {@link JsonPathElement#exists()} will return false
      *
      * @param index the segment index to retrieve
+     *
      * @return a {@link JsonPathElement} for this index
      */
     public JsonPathElement element(int index) {

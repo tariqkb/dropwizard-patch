@@ -17,24 +17,19 @@
 package io.progix.dropwizard.patch.operations.contextual.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.progix.dropwizard.patch.JsonPatchValue;
 import io.progix.dropwizard.patch.JsonPath;
-import io.progix.dropwizard.patch.operations.contextual.ContextualAddOperation;
-import io.progix.jackson.JsonPatchInstruction;
-import io.progix.jackson.operations.AddOperation;
+import io.progix.dropwizard.patch.operations.contextual.ContextualMoveOperation;
+import io.progix.jackson.JsonPatchOperation;
+import io.progix.jackson.JsonPatchOperationType;
+import io.progix.jackson.operations.MoveOperation;
 
+public class JsonMoveOperation implements ContextualMoveOperation<JsonNode> {
 
-public class DefaultAddOperation<T> implements ContextualAddOperation<T> {
+    @Override
+    public JsonNode move(JsonNode context, JsonPath from, JsonPath path) {
+        JsonPatchOperation instruction = new JsonPatchOperation(JsonPatchOperationType.MOVE,
+                path.getJsonPointer(), from.getJsonPointer());
 
-  private final ObjectMapper mapper;
-
-  public DefaultAddOperation(ObjectMapper mapper) {
-    this.mapper = mapper;
-  }
-
-  @Override
-  public void add(T context, JsonPath path, JsonPatchValue value) {
-
-  }
+        return MoveOperation.apply(instruction, context);
+    }
 }

@@ -16,24 +16,25 @@
 
 package io.progix.dropwizard.patch.test;
 
+import com.fasterxml.jackson.core.JsonPointer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.jackson.Jackson;
 import io.progix.dropwizard.patch.ContextualJsonPatch;
 import io.progix.dropwizard.patch.JsonPatch;
-import io.progix.dropwizard.patch.JsonPatchOperation;
-import io.progix.dropwizard.patch.JsonPatchOperationType;
+import io.progix.jackson.JsonPatchOperation;
+import io.progix.jackson.JsonPatchOperationType;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import static io.dropwizard.testing.FixtureHelpers.fixture;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JsonPatchSerializationTest {
 
-    private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
+    private static final ObjectMapper mapper = Jackson.newObjectMapper();
 
     private JsonPatchOperation rp1, rp2, rp3, rp4, rp5, rp6, rp7, rp8, rp9, rp10, rp11, rp12, a1, a2, a3, a4, a5, a6, a7,
             a8, a9, a10, a11, a12, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, m1, m2, m3, m4, m5,
@@ -125,7 +126,7 @@ public class JsonPatchSerializationTest {
                         a8, a9, a10, a11, a12, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, m1, m2, m3, m4, m5,
                         m6, m7, m8, m9, c1, c2, c3, c4, c5, c6, c7, c8, c9, rm1, rm2, rm3));
 
-        assertThat(MAPPER.readValue(fixture("fixtures/patchrequest.json"), JsonPatch.class)).isEqualTo(request);
+        assertThat(mapper.readValue(fixture("fixtures/patchrequest.json"), JsonPatch.class)).isEqualTo(request);
     }
 
     @Test
@@ -134,42 +135,43 @@ public class JsonPatchSerializationTest {
                 Arrays.asList(rp1, rp2, rp3, rp4, rp5, rp6, rp7, rp8, rp9, rp10, rp11, rp12, a1, a2, a3, a4, a5, a6, a7,
                         a8, a9, a10, a11, a12, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, m1, m2, m3, m4, m5,
                         m6, m7, m8, m9, c1, c2, c3, c4, c5, c6, c7, c8, c9, rm1, rm2, rm3));
-        assertThat(MAPPER.readValue(fixture("fixtures/patchrequest.json"), ContextualJsonPatch.class)).isEqualTo(contextualRequest);
+        assertThat(mapper.readValue(fixture("fixtures/patchrequest.json"), ContextualJsonPatch.class)).isEqualTo(
+                contextualRequest);
     }
 
     private JsonPatchOperation replace(String path, Object[] values) {
-        return new JsonPatchOperation(JsonPatchOperationType.REPLACE, path, new ArrayList<>(Arrays.asList(values)), null);
+        return new JsonPatchOperation(JsonPatchOperationType.REPLACE, JsonPointer.compile(path), mapper.convertValue(values, JsonNode.class));
     }
 
     private JsonPatchOperation add(String path, Object[] values) {
-        return new JsonPatchOperation(JsonPatchOperationType.ADD, path, new ArrayList<>(Arrays.asList(values)), null);
+        return new JsonPatchOperation(JsonPatchOperationType.ADD, JsonPointer.compile(path), mapper.convertValue(values, JsonNode.class));
     }
 
     private JsonPatchOperation test(String path, Object[] values) {
-        return new JsonPatchOperation(JsonPatchOperationType.TEST, path, new ArrayList<>(Arrays.asList(values)), null);
+        return new JsonPatchOperation(JsonPatchOperationType.TEST, JsonPointer.compile(path), mapper.convertValue(values, JsonNode.class));
     }
 
     private JsonPatchOperation replace(String path, Object values) {
-        return new JsonPatchOperation(JsonPatchOperationType.REPLACE, path, new ArrayList<>(Arrays.asList(values)), null);
+        return new JsonPatchOperation(JsonPatchOperationType.REPLACE, JsonPointer.compile(path), mapper.convertValue(values, JsonNode.class));
     }
 
     private JsonPatchOperation add(String path, Object values) {
-        return new JsonPatchOperation(JsonPatchOperationType.ADD, path, new ArrayList<>(Arrays.asList(values)), null);
+        return new JsonPatchOperation(JsonPatchOperationType.ADD, JsonPointer.compile(path), mapper.convertValue(values, JsonNode.class));
     }
 
     private JsonPatchOperation test(String path, Object values) {
-        return new JsonPatchOperation(JsonPatchOperationType.TEST, path, new ArrayList<>(Arrays.asList(values)), null);
+        return new JsonPatchOperation(JsonPatchOperationType.TEST, JsonPointer.compile(path), mapper.convertValue(values, JsonNode.class));
     }
 
     private JsonPatchOperation move(String path, String from) {
-        return new JsonPatchOperation(JsonPatchOperationType.MOVE, path, null, from);
+        return new JsonPatchOperation(JsonPatchOperationType.MOVE, JsonPointer.compile(path), JsonPointer.compile(from));
     }
 
     private JsonPatchOperation copy(String path, String from) {
-        return new JsonPatchOperation(JsonPatchOperationType.COPY, path, null, from);
+        return new JsonPatchOperation(JsonPatchOperationType.COPY, JsonPointer.compile(path), JsonPointer.compile(from));
     }
 
     private JsonPatchOperation remove(String path) {
-        return new JsonPatchOperation(JsonPatchOperationType.REMOVE, path, null, null);
+        return new JsonPatchOperation(JsonPatchOperationType.REMOVE, JsonPointer.compile(path));
     }
 }

@@ -20,7 +20,7 @@
 package io.progix.dropwizard.patch.exception;
 
 import com.google.common.base.Joiner;
-import io.progix.dropwizard.patch.JsonPatchOperationType;
+import io.progix.jackson.JsonPatchOperationType;
 
 import java.util.Set;
 
@@ -32,7 +32,7 @@ public class PatchOperationNotSupportedException extends RuntimeException {
     private final Set<JsonPatchOperationType> operations;
 
     /**
-     * @param operations A set of  {@link io.progix.dropwizard.patch.JsonPatchOperationType} not supported for this
+     * @param operations A set of  {@link JsonPatchOperationType} not supported for this
      *                   resource.
      */
     public PatchOperationNotSupportedException(Set<JsonPatchOperationType> operations) {

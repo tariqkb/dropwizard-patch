@@ -16,14 +16,23 @@
 
 package io.progix.dropwizard.patch.operations.contextual.json;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.progix.dropwizard.patch.JsonPatchValue;
 import io.progix.dropwizard.patch.JsonPath;
 import io.progix.dropwizard.patch.operations.contextual.ContextualTestOperation;
+import io.progix.jackson.JsonPatchOperation;
+import io.progix.jackson.JsonPatchOperationType;
+import io.progix.jackson.operations.TestOperation;
 
-public class DefaultTestOperation implements ContextualTestOperation<String> {
+public class JsonTestOperation implements ContextualTestOperation<JsonNode> {
 
     @Override
-    public boolean test(String context, JsonPath path, JsonPatchValue value) {
-        return false;
+    public boolean test(JsonNode context, JsonPath path, JsonPatchValue value) {
+        JsonPatchOperation instruction = new JsonPatchOperation(JsonPatchOperationType.TEST,
+                path.getJsonPointer(), value.getNode());
+
+        TestOperation.apply(instruction, context);
+
+        return true;
     }
 }

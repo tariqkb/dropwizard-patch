@@ -31,6 +31,6 @@ public interface ContextualRemoveOperation<T> {
      * @param path    The {@link JsonPath} for the location of the value to be removed.
      * @see RemoveOperation
      */
-    public void remove(T context, JsonPath path);
+    public T remove(T context, JsonPath path);
 
 }

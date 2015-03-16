@@ -31,5 +31,5 @@ public interface ContextualCopyOperation<T> {
      * @param path    The {@link JsonPath} for the location the value should be copied to
      * @see CopyOperation
      */
-    public void copy(T context, JsonPath from, JsonPath path);
+    public T copy(T context, JsonPath from, JsonPath path);
 }

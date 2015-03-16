@@ -20,9 +20,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.jackson.Jackson;
-import io.progix.dropwizard.patch.exception.PatchTestFailedException;
-import io.progix.dropwizard.patch.operations.contextual.json.*;
 import io.progix.jackson.JsonPatchOperation;
+import io.progix.jackson.exceptions.JsonPatchTestFailedException;
 
 import java.util.List;
 
@@ -33,111 +32,93 @@ public class DefaultJsonPatch<T> extends ContextualJsonPatch<T> {
     @JsonIgnore
     private final Class<? extends T> typeClass;
 
-    @JsonIgnore
-    private final JsonAddOperation jsonAddOperation;
-    @JsonIgnore
-    private final JsonRemoveOperation jsonRemoveOperation;
-    @JsonIgnore
-    private final JsonReplaceOperation jsonReplaceOperation;
-    @JsonIgnore
-    private final JsonMoveOperation jsonMoveOperation;
-    @JsonIgnore
-    private final JsonCopyOperation jsonCopyOperation;
-    @JsonIgnore
-    private final JsonTestOperation jsonTestOperation;
-
     /**
      * Constructs an instance using a list of {@link JsonPatchOperation}
      *
      * @param operations A list of {@link JsonPatchOperation}
-     * @param typeClass Class is required to convert a JsonNode back into context class
+     * @param typeClass  Class is required to convert a JsonNode back into context class
      */
     public DefaultJsonPatch(List<JsonPatchOperation> operations, Class<? extends T> typeClass) {
         super(operations);
 
         this.typeClass = typeClass;
         this.mapper = Jackson.newObjectMapper();
-
-        this.jsonAddOperation = new JsonAddOperation();
-        this.jsonRemoveOperation = new JsonRemoveOperation();
-        this.jsonReplaceOperation = new JsonReplaceOperation();
-        this.jsonMoveOperation = new JsonMoveOperation();
-        this.jsonCopyOperation = new JsonCopyOperation();
-        this.jsonTestOperation = new JsonTestOperation();
     }
 
     @Override
-    public T apply(T context) throws PatchTestFailedException {
+    public T apply(T context) throws JsonPatchTestFailedException {
         T copiedContext = PatchUtil.copy(context);
 
-        for (JsonPatchOperation instruction : instructions) {
-            JsonPath path = new JsonPath(instruction.getPath());
+        for (JsonPatchOperation instruction : operations) {
 
             switch (instruction.getOperation()) {
                 case ADD:
                     if (addOperation == null) {
                         JsonNode node = mapper.convertValue(copiedContext, JsonNode.class);
-                        node = jsonAddOperation.add(node, path, new JsonPatchValue(instruction.getValue()));
+                        node = io.progix.jackson.JsonPatch.add(instruction.getPath(), instruction.getValue(), node);
                         copiedContext = mapper.convertValue(node, typeClass);
                     } else {
 
-                        addOperation.add(copiedContext, path, new JsonPatchValue(instruction.getValue()));
+                        addOperation.add(copiedContext, new JsonPath(instruction.getPath()), new JsonPatchValue
+                                (instruction.getValue()));
                     }
                     break;
                 case COPY:
                     if (copyOperation == null) {
                         JsonNode node = mapper.convertValue(copiedContext, JsonNode.class);
-                        node = jsonCopyOperation
-                                .copy(node, new JsonPath(instruction.getFrom()), path);
+                        node = io.progix.jackson.JsonPatch.copy(instruction.getPath(), instruction.getFrom(), node);
                         copiedContext = mapper.convertValue(node, typeClass);
                     } else {
 
                         copyOperation
-                                .copy(copiedContext, new JsonPath(instruction.getFrom()), path);
+                                .copy(copiedContext, new JsonPath(instruction.getFrom()), new JsonPath(instruction
+                                        .getPath()));
                     }
                     break;
                 case MOVE:
                     if (moveOperation == null) {
                         JsonNode node = mapper.convertValue(copiedContext, JsonNode.class);
-                        node = jsonMoveOperation
-                                .move(node, new JsonPath(instruction.getFrom()), path);
+                        node = io.progix.jackson.JsonPatch.move(instruction.getPath(), instruction.getFrom(), node);
                         copiedContext = mapper.convertValue(node, typeClass);
                     } else {
 
                         moveOperation
-                                .move(copiedContext, new JsonPath(instruction.getFrom()), path);
+                                .move(copiedContext, new JsonPath(instruction.getFrom()), new JsonPath(instruction
+                                        .getPath()));
                     }
                     break;
                 case REMOVE:
                     if (removeOperation == null) {
                         JsonNode node = mapper.convertValue(copiedContext, JsonNode.class);
-                        node = jsonRemoveOperation.remove(node, path);
+                        node = io.progix.jackson.JsonPatch.remove(instruction.getPath(), node);
                         copiedContext = mapper.convertValue(node, typeClass);
                     } else {
 
-                        removeOperation.remove(copiedContext, path);
+                        removeOperation.remove(copiedContext, new JsonPath(instruction.getPath()));
                     }
                     break;
                 case REPLACE:
                     if (replaceOperation == null) {
                         JsonNode node = mapper.convertValue(copiedContext, JsonNode.class);
-                        node = jsonReplaceOperation.replace(node, path, new JsonPatchValue(instruction.getValue()));
+                        node = io.progix.jackson.JsonPatch.replace(instruction.getPath(), instruction.getValue(), node);
                         copiedContext = mapper.convertValue(node, typeClass);
                     } else {
 
-                        replaceOperation.replace(copiedContext, path, new JsonPatchValue(instruction.getValue()));
+                        replaceOperation.replace(copiedContext, new JsonPath(instruction.getPath()), new
+                                JsonPatchValue(instruction.getValue()));
                     }
                     break;
                 case TEST:
                     if (testOperation == null) {
                         JsonNode node = mapper.convertValue(copiedContext, JsonNode.class);
-                        jsonTestOperation.test(node, path, new JsonPatchValue(instruction.getValue()));
+                        io.progix.jackson.JsonPatch.test(instruction.getPath(), instruction.getValue(), node);
                     } else {
 
                         boolean success = testOperation
-                                .test(copiedContext, path, new JsonPatchValue(instruction.getValue()));
+                                .test(copiedContext, new JsonPath(instruction.getPath()), new JsonPatchValue
+                                        (instruction.getValue()));
                         if (!success) {
-                            throw new PatchTestFailedException(path, instruction.getValue());
+                            throw new JsonPatchTestFailedException(instruction.getPath(), instruction.getValue(), "A test failed.");
                         }
                     }
                     break;

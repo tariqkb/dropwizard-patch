@@ -20,8 +20,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.jersey.PATCH;
 import io.progix.dropwizard.patch.exception.InvalidPatchPathException;
-import io.progix.dropwizard.patch.operations.*;
-import io.progix.dropwizard.patch.operations.contextual.*;
+import io.progix.dropwizard.patch.operations.AddOperation;
+import io.progix.dropwizard.patch.operations.CopyOperation;
+import io.progix.dropwizard.patch.operations.MoveOperation;
+import io.progix.dropwizard.patch.operations.RemoveOperation;
+import io.progix.dropwizard.patch.operations.ReplaceOperation;
+import io.progix.dropwizard.patch.operations.TestOperation;
+import io.progix.dropwizard.patch.operations.contextual.ContextualAddOperation;
+import io.progix.dropwizard.patch.operations.contextual.ContextualCopyOperation;
+import io.progix.dropwizard.patch.operations.contextual.ContextualMoveOperation;
+import io.progix.dropwizard.patch.operations.contextual.ContextualRemoveOperation;
+import io.progix.dropwizard.patch.operations.contextual.ContextualReplaceOperation;
+import io.progix.dropwizard.patch.operations.contextual.ContextualTestOperation;
 import org.apache.log4j.Logger;
 
 import javax.ws.rs.Consumes;
@@ -46,9 +56,18 @@ public class UserResource {
     }
 
     @PATCH
+    @Path("/default/{id}")
+    public void updateUserDefault(@PathParam("id") int id, DefaultJsonPatch<User> request) {
+        User user = dao.getUsers().get(0);
+        User patchedUser = request.apply(user);
+
+        dao.getUsers().set(0, patchedUser);
+    }
+
+    @PATCH
     @Path("/contextual/no-operations/{id}")
     public void noOpContextual(@PathParam("id") int id, ContextualJsonPatch<User> request) {
-        request.apply(dao.getUsers().get(0));
+        dao.getUsers().set(0, request.apply(dao.getUsers().get(0)));
     }
 
     @PATCH

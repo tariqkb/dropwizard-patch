@@ -19,10 +19,15 @@ package io.progix.dropwizard.patch;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.progix.dropwizard.patch.exception.PatchOperationNotSupportedException;
-import io.progix.dropwizard.patch.exception.PatchTestFailedException;
-import io.progix.dropwizard.patch.operations.contextual.*;
+import io.progix.dropwizard.patch.operations.contextual.ContextualAddOperation;
+import io.progix.dropwizard.patch.operations.contextual.ContextualCopyOperation;
+import io.progix.dropwizard.patch.operations.contextual.ContextualMoveOperation;
+import io.progix.dropwizard.patch.operations.contextual.ContextualRemoveOperation;
+import io.progix.dropwizard.patch.operations.contextual.ContextualReplaceOperation;
+import io.progix.dropwizard.patch.operations.contextual.ContextualTestOperation;
 import io.progix.jackson.JsonPatchOperation;
 import io.progix.jackson.JsonPatchOperationType;
+import io.progix.jackson.exceptions.JsonPatchTestFailedException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -45,7 +50,7 @@ import java.util.Set;
 @JsonDeserialize(using = ContextualJsonPatchDeserializer.class)
 public class ContextualJsonPatch<T> {
 
-    protected List<JsonPatchOperation> instructions;
+    protected List<JsonPatchOperation> operations;
 
     @JsonIgnore
     protected ContextualAddOperation<T> addOperation;
@@ -63,10 +68,10 @@ public class ContextualJsonPatch<T> {
     /**
      * Constructs an instance using a list of {@link JsonPatchOperation}
      *
-     * @param instructions A list of {@link JsonPatchOperation}
+     * @param operations A list of {@link JsonPatchOperation}
      */
-    public ContextualJsonPatch(List<JsonPatchOperation> instructions) {
-        this.instructions = instructions;
+    public ContextualJsonPatch(List<JsonPatchOperation> operations) {
+        this.operations = operations;
     }
 
     /**
@@ -74,8 +79,8 @@ public class ContextualJsonPatch<T> {
      * <p/>
      * This may be useful for edge cases not covered with the operation handlers.
      */
-    public List<JsonPatchOperation> getInstructions() {
-        return instructions;
+    public List<JsonPatchOperation> getOperations() {
+        return operations;
     }
 
     /**
@@ -88,25 +93,25 @@ public class ContextualJsonPatch<T> {
      * Note that the context given will be copied using Jackson and will NOT be modified.
      *
      * @return a copy of the given context with all patch operation preformed.
-     * @throws PatchTestFailedException when a TEST patch operation fails
+     * @throws JsonPatchTestFailedException when a TEST patch operation fails
      * @see JsonPatchOperationType#TEST
      */
-    public T apply(T context) throws PatchTestFailedException {
+    public T apply(T context) throws JsonPatchTestFailedException {
 
         T copiedContext = PatchUtil.copy(context);
 
         Set<JsonPatchOperationType> unsupportedOperationTypes = new HashSet<>();
 
-        for (JsonPatchOperation instruction : instructions) {
-            JsonPath path = new JsonPath(instruction.getPath());
+        for (JsonPatchOperation operation : operations) {
+            JsonPath path = new JsonPath(operation.getPath());
 
-            switch (instruction.getOperation()) {
+            switch (operation.getOperation()) {
                 case ADD:
                     if (addOperation == null) {
                         unsupportedOperationTypes.add(JsonPatchOperationType.ADD);
                     } else {
 
-                        addOperation.add(copiedContext, path, new JsonPatchValue(instruction.getValue()));
+                        addOperation.add(copiedContext, path, new JsonPatchValue(operation.getValue()));
                     }
                     break;
                 case COPY:
@@ -114,7 +119,7 @@ public class ContextualJsonPatch<T> {
                         unsupportedOperationTypes.add(JsonPatchOperationType.COPY);
                     } else {
 
-                        copyOperation.copy(copiedContext, new JsonPath(instruction.getFrom()), path);
+                        copyOperation.copy(copiedContext, new JsonPath(operation.getFrom()), path);
                     }
                     break;
                 case MOVE:
@@ -122,7 +127,7 @@ public class ContextualJsonPatch<T> {
                         unsupportedOperationTypes.add(JsonPatchOperationType.MOVE);
                     } else {
 
-                        moveOperation.move(copiedContext, new JsonPath(instruction.getFrom()), path);
+                        moveOperation.move(copiedContext, new JsonPath(operation.getFrom()), path);
                     }
                     break;
                 case REMOVE:
@@ -138,7 +143,7 @@ public class ContextualJsonPatch<T> {
                         unsupportedOperationTypes.add(JsonPatchOperationType.REPLACE);
                     } else {
 
-                        replaceOperation.replace(copiedContext, path, new JsonPatchValue(instruction.getValue()));
+                        replaceOperation.replace(copiedContext, path, new JsonPatchValue(operation.getValue()));
                     }
                     break;
                 case TEST:
@@ -146,9 +151,9 @@ public class ContextualJsonPatch<T> {
                         unsupportedOperationTypes.add(JsonPatchOperationType.TEST);
                     } else {
 
-                        boolean success = testOperation.test(copiedContext, path, new JsonPatchValue(instruction.getValue()));
+                        boolean success = testOperation.test(copiedContext, path, new JsonPatchValue(operation.getValue()));
                         if (!success) {
-                            throw new PatchTestFailedException(path, instruction.getValue());
+                            throw new JsonPatchTestFailedException(operation.getPath(), operation.getValue(), "A test failed");
                         }
                     }
                     break;
@@ -233,19 +238,19 @@ public class ContextualJsonPatch<T> {
 
         ContextualJsonPatch that = (ContextualJsonPatch) o;
 
-        return instructions.equals(that.instructions);
+        return operations.equals(that.operations);
 
     }
 
     @Override
     public int hashCode() {
-        return instructions.hashCode();
+        return operations.hashCode();
     }
 
     @Override
     public String toString() {
         return "JsonPatch{" +
-                "instructions=" + instructions +
+                "operations=" + operations +
                 '}';
     }
 }

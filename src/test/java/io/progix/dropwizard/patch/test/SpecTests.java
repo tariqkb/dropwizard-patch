@@ -21,8 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.testing.FixtureHelpers;
 import io.progix.dropwizard.patch.DefaultJsonPatch;
 import io.progix.dropwizard.patch.JsonTestCase;
-import io.progix.jackson.JsonPatchFailedException;
 import io.progix.jackson.JsonPatchOperation;
+import io.progix.jackson.exceptions.JsonPatchFailedException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -55,8 +55,8 @@ public class SpecTests {
         try {
             JsonNode documentNode = mapper.readTree(testCase.getDoc());
 
-            JsonPatchOperation[] operations = mapper.convertValue(mapper.readTree(testCase.getPatch()), JsonPatchOperation[].class);
-            DefaultJsonPatch<JsonNode>  patch = new DefaultJsonPatch<>(Arrays.asList(operations), JsonNode.class);
+            JsonPatchOperation[] patchOperations = mapper.convertValue(testCase.getPatch(), JsonPatchOperation[].class);
+            DefaultJsonPatch<JsonNode>  patch = new DefaultJsonPatch<>(Arrays.asList(patchOperations), JsonNode.class);
 
             JsonNode resultNode = patch.apply(documentNode);
             if (testCase.isErrorCase()) {

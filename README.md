@@ -51,7 +51,7 @@ useful for removing elements of an array.
 The move operation can be used to move any part of a resource to another part of that resource.
 
 ####test
-This operation can be used to validate a part of a resource either before or after other patch instructions.
+This operation can be used to validate a part of a resource either before or after other patch operations.
 
 Getting started
 ---------------

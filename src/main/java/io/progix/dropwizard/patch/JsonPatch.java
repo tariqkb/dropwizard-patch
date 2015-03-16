@@ -19,10 +19,15 @@ package io.progix.dropwizard.patch;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.progix.dropwizard.patch.exception.PatchOperationNotSupportedException;
-import io.progix.dropwizard.patch.exception.PatchTestFailedException;
-import io.progix.dropwizard.patch.operations.*;
+import io.progix.dropwizard.patch.operations.AddOperation;
+import io.progix.dropwizard.patch.operations.CopyOperation;
+import io.progix.dropwizard.patch.operations.MoveOperation;
+import io.progix.dropwizard.patch.operations.RemoveOperation;
+import io.progix.dropwizard.patch.operations.ReplaceOperation;
+import io.progix.dropwizard.patch.operations.TestOperation;
 import io.progix.jackson.JsonPatchOperation;
 import io.progix.jackson.JsonPatchOperationType;
+import io.progix.jackson.exceptions.JsonPatchTestFailedException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -41,7 +46,7 @@ import java.util.Set;
 @JsonDeserialize(using = JsonPatchDeserializer.class)
 public class JsonPatch {
 
-    private List<JsonPatchOperation> instructions;
+    private List<JsonPatchOperation> operations;
 
     @JsonIgnore
     private AddOperation addOperation;
@@ -59,10 +64,10 @@ public class JsonPatch {
     /**
      * Constructs an instance using a list of {@link JsonPatchOperation}
      *
-     * @param instructions A list of {@link JsonPatchOperation}
+     * @param operations A list of {@link JsonPatchOperation}
      */
-    public JsonPatch(List<io.progix.jackson.JsonPatchOperation> instructions) {
-        this.instructions = instructions;
+    public JsonPatch(List<io.progix.jackson.JsonPatchOperation> operations) {
+        this.operations = operations;
     }
 
     /**
@@ -70,8 +75,8 @@ public class JsonPatch {
      * <p/>
      * This may be useful for edge cases not covered with the operation handlers.
      */
-    public List<JsonPatchOperation> getInstructions() {
-        return instructions;
+    public List<JsonPatchOperation> getOperations() {
+        return operations;
     }
 
     /**
@@ -81,22 +86,22 @@ public class JsonPatch {
      * Calling this method is required for the patch to be applied and is left to the user to decide where and when it
      * will applied in a resource method.
      *
-     * @throws PatchTestFailedException when a TEST patch operation fails
+     * @throws JsonPatchTestFailedException when a TEST patch operation fails
      * @see JsonPatchOperationType#TEST
      */
-    public void apply() throws PatchTestFailedException {
+    public void apply() throws JsonPatchTestFailedException {
         Set<JsonPatchOperationType> unsupportedOperationTypes = new HashSet<>();
 
-        for (JsonPatchOperation instruction : instructions) {
-            JsonPath path = new JsonPath(instruction.getPath());
+        for (JsonPatchOperation operation : operations) {
+            JsonPath path = new JsonPath(operation.getPath());
 
-            switch (instruction.getOperation()) {
+            switch (operation.getOperation()) {
                 case ADD:
                     if (addOperation == null) {
                         unsupportedOperationTypes.add(JsonPatchOperationType.ADD);
                     } else {
 
-                        addOperation.add(path, new JsonPatchValue(instruction.getValue()));
+                        addOperation.add(path, new JsonPatchValue(operation.getValue()));
                     }
                     break;
                 case COPY:
@@ -104,7 +109,7 @@ public class JsonPatch {
                         unsupportedOperationTypes.add(JsonPatchOperationType.COPY);
                     } else {
 
-                        copyOperation.copy(new JsonPath(instruction.getFrom()), path);
+                        copyOperation.copy(new JsonPath(operation.getFrom()), new JsonPath(operation.getPath()));
                     }
                     break;
                 case MOVE:
@@ -112,7 +117,7 @@ public class JsonPatch {
                         unsupportedOperationTypes.add(JsonPatchOperationType.MOVE);
                     } else {
 
-                        moveOperation.move(new JsonPath(instruction.getFrom()), path);
+                        moveOperation.move(new JsonPath(operation.getFrom()), new JsonPath(operation.getPath()));
                     }
                     break;
                 case REMOVE:
@@ -120,7 +125,7 @@ public class JsonPatch {
                         unsupportedOperationTypes.add(JsonPatchOperationType.REMOVE);
                     } else {
 
-                        removeOperation.remove(path);
+                        removeOperation.remove(new JsonPath(operation.getPath()));
                     }
                     break;
                 case REPLACE:
@@ -128,7 +133,7 @@ public class JsonPatch {
                         unsupportedOperationTypes.add(JsonPatchOperationType.REPLACE);
                     } else {
 
-                        replaceOperation.replace(path, new JsonPatchValue(instruction.getValue()));
+                        replaceOperation.replace(new JsonPath(operation.getPath()), new JsonPatchValue(operation.getValue()));
                     }
                     break;
                 case TEST:
@@ -136,9 +141,9 @@ public class JsonPatch {
                         unsupportedOperationTypes.add(JsonPatchOperationType.TEST);
                     } else {
 
-                        boolean success = testOperation.test(path, new JsonPatchValue(instruction.getValue()));
+                        boolean success = testOperation.test(new JsonPath(operation.getPath()), new JsonPatchValue(operation.getValue()));
                         if (!success) {
-                            throw new PatchTestFailedException(path, instruction.getValue());
+                            throw new JsonPatchTestFailedException(operation.getPath(), operation.getValue(), "A test failed.");
                         }
                     }
                     break;
@@ -220,19 +225,19 @@ public class JsonPatch {
 
         JsonPatch that = (JsonPatch) o;
 
-        return instructions.equals(that.instructions);
+        return operations.equals(that.operations);
 
     }
 
     @Override
     public int hashCode() {
-        return instructions.hashCode();
+        return operations.hashCode();
     }
 
     @Override
     public String toString() {
         return "JsonPatch{" +
-                "instructions=" + instructions +
+                "operations=" + operations +
                 '}';
     }
 }

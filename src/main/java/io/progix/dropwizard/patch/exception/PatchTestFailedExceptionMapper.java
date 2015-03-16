@@ -16,19 +16,21 @@
 
 package io.progix.dropwizard.patch.exception;
 
+import io.progix.jackson.exceptions.JsonPatchTestFailedException;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
 /**
- * {@link ExceptionMapper} for {@link PatchTestFailedException}
+ * {@link ExceptionMapper} for {@link JsonPatchTestFailedException}
  * <p/>
  * There is no information in RFC6902 describing the manner in which the call should fail. The response code 412
  * Precondition Failed was chosen as this was felt to best describe a TEST patch operation failure.
  */
-public class PatchTestFailedExceptionMapper implements ExceptionMapper<PatchTestFailedException> {
+public class PatchTestFailedExceptionMapper implements ExceptionMapper<JsonPatchTestFailedException> {
 
     @Override
-    public Response toResponse(PatchTestFailedException exception) {
+    public Response toResponse(JsonPatchTestFailedException exception) {
         return Response.status(412).entity(exception.getMessage()).build();
     }
 

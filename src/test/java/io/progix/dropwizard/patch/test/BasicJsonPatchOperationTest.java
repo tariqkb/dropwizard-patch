@@ -19,13 +19,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
-public class JsonPatchOperationTest {
+public class BasicJsonPatchOperationTest {
 
     private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
 
     private final Map<JsonPatchOperationType, Boolean> includeMap;
 
-    public JsonPatchOperationTest(Map<JsonPatchOperationType, Boolean> includeMap) {
+    public BasicJsonPatchOperationTest(Map<JsonPatchOperationType, Boolean> includeMap) {
         this.includeMap = includeMap;
     }
 
@@ -198,12 +198,12 @@ public class JsonPatchOperationTest {
 
     @Test
     public void test() throws IOException {
-        JsonPatch jsonPatch = MAPPER.readValue(fixture("fixtures/patchrequest.json"), JsonPatch.class);
+        BasicJsonPatch basicJsonPatch = MAPPER.readValue(fixture("fixtures/patchrequest.json"), BasicJsonPatch.class);
 
         final Map<JsonPatchOperationType, Boolean> didMap = m(false, false, false, false, false, false);
 
         if (includeMap.get(JsonPatchOperationType.ADD)) {
-            jsonPatch.setAdd(new AddOperation() {
+            basicJsonPatch.setAdd(new AddOperation() {
                 @Override
                 public void add(JsonPath path, JsonPatchValue value) {
                     didMap.put(JsonPatchOperationType.ADD, true);
@@ -211,7 +211,7 @@ public class JsonPatchOperationTest {
             });
         }
         if (includeMap.get(JsonPatchOperationType.COPY)) {
-            jsonPatch.setCopy(new CopyOperation() {
+            basicJsonPatch.setCopy(new CopyOperation() {
                 @Override
                 public void copy(JsonPath from, JsonPath path) {
                     didMap.put(JsonPatchOperationType.COPY, true);
@@ -219,7 +219,7 @@ public class JsonPatchOperationTest {
             });
         }
         if (includeMap.get(JsonPatchOperationType.MOVE)) {
-            jsonPatch.setMove(new MoveOperation() {
+            basicJsonPatch.setMove(new MoveOperation() {
                 @Override
                 public void move(JsonPath from, JsonPath path) {
                     didMap.put(JsonPatchOperationType.MOVE, true);
@@ -227,7 +227,7 @@ public class JsonPatchOperationTest {
             });
         }
         if (includeMap.get(JsonPatchOperationType.REMOVE)) {
-            jsonPatch.setRemove(new RemoveOperation() {
+            basicJsonPatch.setRemove(new RemoveOperation() {
                 @Override
                 public void remove(JsonPath path) {
                     didMap.put(JsonPatchOperationType.REMOVE, true);
@@ -235,7 +235,7 @@ public class JsonPatchOperationTest {
             });
         }
         if (includeMap.get(JsonPatchOperationType.REPLACE)) {
-            jsonPatch.setReplace(new ReplaceOperation() {
+            basicJsonPatch.setReplace(new ReplaceOperation() {
                 @Override
                 public void replace(JsonPath path, JsonPatchValue value) {
                     didMap.put(JsonPatchOperationType.REPLACE, true);
@@ -243,7 +243,7 @@ public class JsonPatchOperationTest {
             });
         }
         if (includeMap.get(JsonPatchOperationType.TEST)) {
-            jsonPatch.setTest(new TestOperation() {
+            basicJsonPatch.setTest(new TestOperation() {
                 @Override
                 public boolean test(JsonPath path, JsonPatchValue value) {
                     didMap.put(JsonPatchOperationType.TEST, true);
@@ -254,7 +254,7 @@ public class JsonPatchOperationTest {
 
         Set<JsonPatchOperationType> operationsInCaughtException = new HashSet<>();
         try {
-            jsonPatch.apply();
+            basicJsonPatch.apply();
         } catch (PatchOperationNotSupportedException e) {
             operationsInCaughtException.addAll(e.getOperations());
         }

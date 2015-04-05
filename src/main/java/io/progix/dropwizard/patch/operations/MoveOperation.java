@@ -16,13 +16,14 @@
 
 package io.progix.dropwizard.patch.operations;
 
+import io.progix.dropwizard.patch.BasicJsonPatch;
 import io.progix.dropwizard.patch.JsonPath;
 import io.progix.dropwizard.patch.exception.InvalidPatchPathException;
 
 /**
  * A handler to contain logic for the patch operation MOVE used in the explicit mode of patching.
  * <p/>
- * This handler can be registered to a {@link io.progix.dropwizard.patch.JsonPatch} in a resource.
+ * This handler can be registered to a {@link BasicJsonPatch} in a resource.
  * <p/>
  * For more information on what the MOVE patch operation should do, reference RFC6902.
  */

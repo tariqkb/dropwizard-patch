@@ -250,13 +250,13 @@ public class UserResource {
 
     @PATCH
     @Path("/no-operations/{id}")
-    public void noOp(@PathParam("id") int id, JsonPatch request) {
+    public void noOp(@PathParam("id") int id, BasicJsonPatch request) {
         request.apply();
     }
 
     @PATCH
     @Path("/{id}")
-    public void updateUser(@PathParam("id") int id, JsonPatch request) {
+    public void updateUser(@PathParam("id") int id, BasicJsonPatch request) {
 
         final User user = dao.getUsers().get(id);
 

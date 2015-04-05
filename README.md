@@ -5,8 +5,7 @@ About
 -----
 This small framework provides an implementation for HTTP Patch for resources in [Dropwizard](http://dropwizard.io).
 This  implementation is based off of [RFC6902](https://tools.ietf.org/html/rfc6902), a proposed standard for
-updating resources. Currently, only an explicit mode of patching is supported by this implementation. A more implicit
-mode of patching is in the works that doesn't require as much code to update a resource.
+updating resources.
 
 How does JSON Patch work?
 -------------------------
@@ -59,35 +58,30 @@ Getting started
 <dependency>
     <groupId>io.progix.dropwizard</groupId>
     <artifactId>dropwizard-patch</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
-To integrate this implementation into your Dropwizard project, add the `PatchBundle` in the `initialize()` method of your `Application` class.
+There are three ways an operation can be executed 
 
-```java
-import io.progix.dropwizard.patch.PatchBundle;
+- Default: automatically applies an operation to a Java object by serializing, patching, and deserializing
+- Contextual: Like default, but instead of automatically patching, simply provides the operation information and target object for you to manipulate
+- Basic: Like contextual, but does not target a object
 
-@Override
-public void initialize(final Bootstrap<Configuration> bootstrap) {
-    bootstrap.addBundle(new PatchBundle());
-}
-```
-
-Explicit patching
------------------
-This mode of patching can be achieved by setting a `PatchRequest` instance as your entity in the resource method. An
+BasicJsonPatch
+--------------
+This mode of patching can be achieved by setting a `BasicJsonPatch` instance as your entity in the resource method. An
 example is shown below:
 
 ```java
 @PATCH
 @Path("/{id}")
-public void patchUser(@PathParam("id") int id, PatchRequest request) throws PatchTestFailedException {
-    request.add(new AddHandler() {
+public void patchUser(@PathParam("id") int id, BasicJsonPatch request) throws PatchTestFailedException {
+    request.setAdd(new AddOperation() {
 
         @Override
         public void add(JsonPath path, JsonPatchValue value) {
-
+            ...
         }
     });
 
@@ -95,13 +89,77 @@ public void patchUser(@PathParam("id") int id, PatchRequest request) throws Patc
 }
 ```
 
-In this example, the `PatchRequest#add()` method is used to set an `AddHandler`, which will contain the logic for the
-`add` operation. For each patch instruction in this request, the code inside the `AddHandler` will execute.
+In this example, the `JsonPatch#setAdd()` method is used to set an `AddOperation`, which will contain the logic for the
+`add` operation. For each patch instruction in this request, the code inside the `AddOperation#add` method will execute.
 
-The `PatchRequest` also has methods for all other operations listed above, exposing the relevant information.
+The `BasicJsonPatch` also has methods for all other operations listed above, exposing the relevant information.
 
-Note that `PatchRequest#apply()` is required to be called before the resource method returns for any patching
+Note that `BasicJsonPatch#apply()` is required to be called before the resource method returns for any patching
 to be preformed!
+
+ContexualJsonPatch
+------------------
+This mode of patching can be achieved by setting a `ContexualJsonPatch` instance as your entity in the resource method. An
+example is shown below:
+
+```java
+@PATCH
+@Path("/{id}")
+public void patchUser(@PathParam("id") int id, ContexualJsonPatch<Person> request) throws PatchTestFailedException {
+
+
+    request.setAdd(new ContextualAddOperation<Person>() {
+
+        @Override
+        public void add(Person person, JsonPath path, JsonPatchValue value) {
+            ...
+        }
+    });
+    
+    Person person = personDao.findById(id);
+    
+    Person patchedPerson = request.apply(person);
+}
+```
+
+Notice that `ContextualJsonPatch` uses a generic type to determine what object should be targeted by the patch operation.
+
+The `Person` object that is exposed in `ContextualAddOperation#add()` represents the target of the operation. Note that 
+this a copied object (by value) and not a copied reference. Any changes made to the person object in this method will not 
+modify the targeted object directly.
+
+`ContextualJsonPatch#apply(T)` is where the targeted object should be passed in. Applying the patch will return the patched 
+object.
+
+DefaultJsonPatch
+----------------
+This mode of patching can be achieved by setting a `DefaultJsonPatch` instance as your entity in the resource method. An
+example is shown below:
+
+```java
+@PATCH
+@Path("/{id}")
+public void patchUser(@PathParam("id") int id, DefaultJsonPatch<Person> request) throws PatchTestFailedException {
+
+    Person person = personDao.findById(id);
+    
+    Person patchedPerson = request.apply(person);
+}
+```
+
+Notice that `DefaultJsonPatch` uses a generic type to determine what object should be targeted by the patch operation.
+
+`DefaultJsonPatch#apply(T)` is where the targeted object should be passed in. Applying the patch will return the patched 
+object.
+
+This method of patching will use Jackson to serialize the target object, apply the operation automatically, and return 
+the deserialized patched object. If the patch transforms the serialized JSON document in such a way that prevents 
+deserialization, an error is thrown.
+
+Notice that you do not need to set a `AddOperation` or any other operation handlers. `DefaultJsonPatch` comes 
+preconfigured with operation handlers that perform a JSON patch. However, if you would like to have more control over
+one or more operations, `DefaultJsonPatch` extends `ContextualJsonPatch`. You can still call the operation handler 
+setters to override the default JSON patching handlers.
 
 ###JsonPath
 `JsonPath` instances contain path information as defined in [RFC6901](https://tools.ietf.org/html/rfc6901) and wrap
@@ -111,20 +169,24 @@ methods are exposed to make patching easier and more concise.
 Building on the example shown above, displayed are a few ways you can use `JsonPath`
 
 ```java
-request.remove(new RemoveHandler() {
+request.setRemove(new RemoveOperation() {
     @Override
     public void remove(JsonPath path) {
+    
         if (path.property(0).is("pets")) {
+        
             if(path.element(1).exists()) {
                 int index = path.element(1).val();
                 user.getPets().remove(index);
             }
+            
         }
+        
     }
 });
 ```
 
-As expected, the only information a `remove` operation needs is the `JsonPath path`, which is provided in the
+As expected, the only information a `remove` operation needs is the `JsonPath`, which is provided in the
 `remove` method of the `RemoveHandler`. We use the `path` to get the first segment as a string property with
 `JsonPath#property(int)` and check if it's equal to `pets` using the `JsonPathProperty#is(String)` method.
 
@@ -139,6 +201,26 @@ Note that both `JsonPath#property(int)` and `JsonPath#element(int)` will never r
 `JsonPathProperty` and `JsonPathElement`, respectively. The `exists()` method for each can be used to determine what
 type the segment is. For each index passed to these methods, only one will return true.
 
+`JsonPath` can also perform a direct equality check to avoid long if-else blocks using `JsonPatch#is(String)`. This 
+method requires the given string path to start with a `/`. An important feature/caveat in this method is matching elements.
+Because we won't always know the index a `JsonPath` targets, you can use the `#` character in the path to represent
+"any number". Because of this, if you need to use the `#` character, prepend it with a `~` (`~#`). See the previous 
+example using this method instead:
+
+```java
+request.setRemove(new RemoveOperation() {
+    @Override
+    public void remove(JsonPath path) {
+    
+        if(path.is("/pets/#")) {
+            int index = path.element(1).val();
+            user.getPets().remove(index);
+        }
+        
+    }
+});
+```
+
 ####Invalid paths
 To provide better client-side information for a path you do not implement patching for, the `JsonPath#endsAt(int)`
 method is provided. This method will return true if the index given is the final segment of the path, false if the
@@ -148,7 +230,7 @@ path continues. This can be useful to ensure the path is exactly what you expect
 example is shown below with better error handling (assuming we only allow the array elements of `pets` to be modified.
 
 ```java
-request.remove(new RemoveHandler() {
+request.setRemove(new RemoveOperation() {
     @Override
     public void remove(JsonPath path) {
         if (path.property(0).is("pets")) {
@@ -174,31 +256,16 @@ Because of this, the `JsonPatchValue#many(Class)` method returns a list of all v
 `Class` passed into these methods is the class the objects for this path you expect. Internally, Jackson is used to
 deserialize the objects into the target class.
 
-Exception mappers
------------------
-Three Jersey exception mappers are also included to cover the three possible exceptions to be thrown with the best
-matching HTTP status codes and built in useful messages. Feel free to implement your own exception mappers if you
-need better control.
-
-```java
-@Override
-public void run(Configuration configuration, Environment environment) throws Exception {
-    environment.jersey().register(new PatchOperationNotSupportedExceptionMapper());
-    environment.jersey().register(new PatchTestFailedExceptionMapper());
-    environment.jersey().register(new InvalidPatchPathExceptionMapper());
-}
-```
-
 Complete example
 ----------------
-In the absence of a dedicated sample, you may reference the `UserResource` used for tests.
+In the absence of a dedicated sample, you may reference the `UserResource` class used for tests.
 
 FAQ
 ---
-###Why does the `TestHandler` return a boolean?
+###Why does the do the various test operations return a boolean?
 The boolean determines if the test fails or succeeds. If the test fails, a `PatchTestFailedException` is
 automatically thrown. Note that you should not return false if the `JsonPath` is invalid, see [Invalid paths]
 (#invalid-paths).
 
-###I'm using the PatchRequest in my resource, but nothing happens after a call is made?
-Make sure you call `PatchRequest#apply() before you return within the resource.
+###I'm using the BasicJsonPatch in my resource, but nothing happens after a call is made?
+Make sure you call `BasicJsonPatch#apply()` before you return within the resource.

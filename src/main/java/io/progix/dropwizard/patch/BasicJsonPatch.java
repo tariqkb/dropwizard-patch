@@ -38,13 +38,13 @@ import java.util.Set;
  * in a resource method.
  * <p/>
  * Add this class as the entity for a resource method to support explicit patching. Deserialization is done
- * automatically using {@link JsonPatchDeserializer}.
+ * automatically using {@link BasicJsonPatchDeserializer}.
  * <p/>
- * {@link JsonPatch#apply()} is used to apply all handler logic and should be called before the end of the resource
+ * {@link BasicJsonPatch#apply()} is used to apply all handler logic and should be called before the end of the resource
  * method for patching to occur.
  */
-@JsonDeserialize(using = JsonPatchDeserializer.class)
-public class JsonPatch {
+@JsonDeserialize(using = BasicJsonPatchDeserializer.class)
+public class BasicJsonPatch {
 
     private List<JsonPatchOperation> operations;
 
@@ -66,7 +66,7 @@ public class JsonPatch {
      *
      * @param operations A list of {@link JsonPatchOperation}
      */
-    public JsonPatch(List<io.progix.jackson.JsonPatchOperation> operations) {
+    public BasicJsonPatch(List<io.progix.jackson.JsonPatchOperation> operations) {
         this.operations = operations;
     }
 
@@ -223,7 +223,7 @@ public class JsonPatch {
         if (o == null || getClass() != o.getClass())
             return false;
 
-        JsonPatch that = (JsonPatch) o;
+        BasicJsonPatch that = (BasicJsonPatch) o;
 
         return operations.equals(that.operations);
 

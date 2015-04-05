@@ -28,17 +28,17 @@ import java.io.IOException;
 import java.util.Arrays;
 
 /**
- * {@link JsonDeserializer} for {@link JsonPatch}
+ * {@link JsonDeserializer} for {@link BasicJsonPatch}
  * <p/>
- * A custom deserializer is needed to convert an array of {@link JsonPatchOperation} into the {@link JsonPatch} object.
+ * A custom deserializer is needed to convert an array of {@link JsonPatchOperation} into the {@link BasicJsonPatch} object.
  */
-public class JsonPatchDeserializer extends JsonDeserializer<JsonPatch> {
+public class BasicJsonPatchDeserializer extends JsonDeserializer<BasicJsonPatch> {
 
     @Override
-    public JsonPatch deserialize(JsonParser jp,
+    public BasicJsonPatch deserialize(JsonParser jp,
                                  DeserializationContext ctxt) throws IOException, JsonProcessingException {
         ObjectMapper mapper = Jackson.newObjectMapper();
         JsonPatchOperation[] instructions = mapper.readValue(jp, JsonPatchOperation[].class);
-        return new JsonPatch(Arrays.asList(instructions));
+        return new BasicJsonPatch(Arrays.asList(instructions));
     }
 }

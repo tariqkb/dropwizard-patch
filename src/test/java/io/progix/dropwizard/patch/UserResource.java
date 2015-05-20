@@ -81,9 +81,13 @@ public class UserResource {
                 if (path.property(0).exists()) {
                     if (path.property(0).is("pets")) {
                         if (path.element(1).exists() && path.endsAt(1)) {
-                            int petIndex = path.element(1).val();
                             if (!path.property(2).exists()) {
-                                user.getPets().addAll(petIndex, value.many(Pet.class));
+                                if(path.element(1).isEndOfArray()) {
+                                    user.getPets().addAll(value.many(Pet.class));
+                                } else {
+                                    int petIndex = path.element(1).val();
+                                    user.getPets().addAll(petIndex, value.many(Pet.class));
+                                }
                             } else {
                                 throw new InvalidPatchPathException(path);
                             }
@@ -267,9 +271,13 @@ public class UserResource {
                 if (path.property(0).exists()) {
                     if (path.property(0).is("pets")) {
                         if (path.element(1).exists() && path.endsAt(1)) {
-                            int petIndex = path.element(1).val();
                             if (!path.property(2).exists()) {
-                                user.getPets().addAll(petIndex, value.many(Pet.class));
+								if(path.element(1).isEndOfArray()) {
+									user.getPets().addAll(value.many(Pet.class));
+								} else {
+									int petIndex = path.element(1).val();
+									user.getPets().addAll(petIndex, value.many(Pet.class));
+								}
                             } else {
                                 throw new InvalidPatchPathException(path);
                             }

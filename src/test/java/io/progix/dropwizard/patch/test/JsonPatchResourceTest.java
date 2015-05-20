@@ -38,7 +38,6 @@ import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -68,9 +67,8 @@ public class JsonPatchResourceTest {
     public void testAdd() {
         Pet bird = new Pet(3, 4, Arrays.asList("Nick"));
 
-        List<Object> pets = new ArrayList<Object>(Arrays.asList(bird));
         JsonPatchOperation addPetInstruction = new JsonPatchOperation(JsonPatchOperationType.ADD,
-                JsonPointer.compile("/pets/-"), mapper.convertValue(pets, JsonNode.class));
+                JsonPointer.compile("/pets/-"), mapper.convertValue(bird, JsonNode.class));
 
         resources.client().target("/users/" + type + "0").request(MediaType.APPLICATION_JSON)
                 .method("PATCH", Entity.json(Arrays.asList(addPetInstruction)));

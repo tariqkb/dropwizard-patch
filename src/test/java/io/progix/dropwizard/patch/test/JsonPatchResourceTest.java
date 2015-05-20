@@ -70,7 +70,7 @@ public class JsonPatchResourceTest {
 
         List<Object> pets = new ArrayList<Object>(Arrays.asList(bird));
         JsonPatchOperation addPetInstruction = new JsonPatchOperation(JsonPatchOperationType.ADD,
-                JsonPointer.compile("/pets"), mapper.convertValue(pets, JsonNode.class));
+                JsonPointer.compile("/pets/-"), mapper.convertValue(pets, JsonNode.class));
 
         resources.client().target("/users/" + type + "0").request(MediaType.APPLICATION_JSON)
                 .method("PATCH", Entity.json(Arrays.asList(addPetInstruction)));

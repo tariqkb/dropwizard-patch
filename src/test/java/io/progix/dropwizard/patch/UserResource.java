@@ -58,10 +58,10 @@ public class UserResource {
     @PATCH
     @Path("/default/{id}")
     public void updateUserDefault(@PathParam("id") int id, DefaultJsonPatch<User> request) {
-        User user = dao.getUsers().get(0);
+        User user = dao.getUsers().get(id);
         User patchedUser = request.apply(user);
 
-        dao.getUsers().set(0, patchedUser);
+        dao.getUsers().set(id, patchedUser);
     }
 
     @PATCH

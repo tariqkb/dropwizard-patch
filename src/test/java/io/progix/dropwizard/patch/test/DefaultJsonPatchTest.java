@@ -22,7 +22,7 @@ public class DefaultJsonPatchTest {
         JsonPatchOperation add = new JsonPatchOperation(JsonPatchOperationType.ADD,
                 JsonPointer.compile("/"), mapper.convertValue("test", JsonNode.class));
 
-        patch = new DefaultJsonPatch<>(Arrays.asList(add), Object.class);
+        patch = new DefaultJsonPatch<>(Arrays.asList(add));
     }
 
     @Test

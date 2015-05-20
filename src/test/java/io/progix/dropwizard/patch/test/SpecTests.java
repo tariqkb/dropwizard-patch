@@ -56,7 +56,7 @@ public class SpecTests {
             JsonNode documentNode = mapper.readTree(testCase.getDoc());
 
             JsonPatchOperation[] patchOperations = mapper.convertValue(testCase.getPatch(), JsonPatchOperation[].class);
-            DefaultJsonPatch<JsonNode>  patch = new DefaultJsonPatch<>(Arrays.asList(patchOperations), JsonNode.class);
+            DefaultJsonPatch<JsonNode>  patch = new DefaultJsonPatch<>(Arrays.asList(patchOperations));
 
             JsonNode resultNode = patch.apply(documentNode);
             if (testCase.isErrorCase()) {

@@ -19,34 +19,35 @@ package io.progix.dropwizard.patch;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.dropwizard.jackson.Jackson;
 import io.progix.jackson.JsonPatchOperation;
 import io.progix.jackson.exceptions.JsonPatchTestFailedException;
 
 import java.util.List;
 
+
+@JsonDeserialize(using = DefaultJsonPatchDeserializer.class)
 public class DefaultJsonPatch<T> extends ContextualJsonPatch<T> {
 
     @JsonIgnore
     private final ObjectMapper mapper;
-    @JsonIgnore
-    private final Class<? extends T> typeClass;
 
     /**
      * Constructs an instance using a list of {@link JsonPatchOperation}
      *
      * @param operations A list of {@link JsonPatchOperation}
-     * @param typeClass  Class is required to convert a JsonNode back into context class
      */
-    public DefaultJsonPatch(List<JsonPatchOperation> operations, Class<? extends T> typeClass) {
+    public DefaultJsonPatch(List<JsonPatchOperation> operations) {
         super(operations);
 
-        this.typeClass = typeClass;
         this.mapper = Jackson.newObjectMapper();
     }
 
     @Override
     public T apply(T context) throws JsonPatchTestFailedException {
+        Class<T> typeClass = (Class<T>) context.getClass();
+
         T copiedContext = PatchUtil.copy(context);
 
         for (JsonPatchOperation instruction : operations) {

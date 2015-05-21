@@ -64,6 +64,63 @@ public class UserResource {
         dao.getUsers().set(id, patchedUser);
     }
 
+	@PATCH
+	@Path("/default-with-custom/{id}")
+	public void updateUserDefaultWithCustom(@PathParam("id") int id, DefaultJsonPatch<User> request) {
+		User user = dao.getUsers().get(id);
+
+		request.setAdd(new ContextualAddOperation<User>() {
+
+			@Override
+			public User add(User user, JsonPath path, JsonPatchValue value) {
+
+				//Makes sure new instances are included in the patch [#11]
+				user = new User(user);
+
+				if (path.property(0).exists()) {
+					if (path.property(0).is("pets")) {
+						if (path.element(1).exists() && path.endsAt(1)) {
+							if (!path.property(2).exists()) {
+								if(path.element(1).isEndOfArray()) {
+									user.getPets().addAll(value.many(Pet.class));
+								} else {
+									int petIndex = path.element(1).val();
+									user.getPets().addAll(petIndex, value.many(Pet.class));
+								}
+							} else {
+								throw new InvalidPatchPathException(path);
+							}
+						} else if (path.endsAt(0)) {
+							user.getPets().addAll(value.many(Pet.class));
+						} else {
+							throw new InvalidPatchPathException(path);
+						}
+					} else if (path.property(0).is("name")) {
+						user.setName(value.one(String.class));
+					} else if (path.property(0).is("emailAddresses")) {
+						if (path.element(1).exists() && path.endsAt(1)) {
+							user.getEmailAddresses().addAll(path.element(1).val(), value.many(String.class));
+						} else if (path.endsAt(0)) {
+							user.getEmailAddresses().addAll(value.many(String.class));
+						} else {
+							throw new InvalidPatchPathException(path);
+						}
+					} else {
+						throw new InvalidPatchPathException(path);
+					}
+				} else {
+					throw new InvalidPatchPathException(path);
+				}
+
+				return user;
+			}
+		});
+
+		User patchedUser = request.apply(user);
+
+		dao.getUsers().set(id, patchedUser);
+	}
+
     @PATCH
     @Path("/contextual/no-operations/{id}")
     public void noOpContextual(@PathParam("id") int id, ContextualJsonPatch<User> request) {
@@ -78,6 +135,10 @@ public class UserResource {
 
             @Override
             public User add(User user, JsonPath path, JsonPatchValue value) {
+
+                //Makes sure new instances are included in the patch [#11]
+                user = new User(user);
+
                 if (path.property(0).exists()) {
                     if (path.property(0).is("pets")) {
                         if (path.element(1).exists() && path.endsAt(1)) {
@@ -120,6 +181,10 @@ public class UserResource {
         request.setCopy(new ContextualCopyOperation<User>() {
             @Override
             public User copy(User user, JsonPath from, JsonPath path) {
+
+				//Makes sure new instances are included in the patch [#11]
+				user = new User(user);
+
                 if (from.property(0).is("pets") && path.property(0).is("pets") && from.endsAt(1) && path.endsAt(1)) {
                     if (from.element(1).exists() && path.element(1).exists()) {
                         Pet pet = user.getPets().get(from.element(1).val());
@@ -138,6 +203,7 @@ public class UserResource {
                 } else {
                     throw new InvalidPatchPathException(path);
                 }
+
                 return user;
             }
         });
@@ -145,6 +211,9 @@ public class UserResource {
         request.setMove(new ContextualMoveOperation<User>() {
             @Override
             public User move(User user, JsonPath from, JsonPath path) {
+				//Makes sure new instances are included in the patch [#11]
+				user = new User(user);
+
                 if (from.property(0).is("pets") && path.property(0).is("pets")) {
                     if (from.element(1).exists() && path.element(1).exists() && from.endsAt(1) && path.endsAt(1)) {
                         int fromIndex = from.element(1).val();
@@ -169,6 +238,7 @@ public class UserResource {
                 } else {
                     throw new InvalidPatchPathException(path);
                 }
+
                 return user;
             }
         });

@@ -59,7 +59,7 @@ public class JsonPatchResourceTest {
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
-        Object[][] data = new Object[][]{{""}, {"default/"}, {"contextual/"}};
+        Object[][] data = new Object[][]{{""}, {"default/"}, {"contextual/"}, {"default-with-custom/"}};
         return Arrays.asList(data);
     }
 

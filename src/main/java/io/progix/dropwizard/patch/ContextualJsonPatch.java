@@ -111,7 +111,7 @@ public class ContextualJsonPatch<T> {
                         unsupportedOperationTypes.add(JsonPatchOperationType.ADD);
                     } else {
 
-                        addOperation.add(copiedContext, path, new JsonPatchValue(operation.getValue()));
+                        copiedContext = addOperation.add(copiedContext, path, new JsonPatchValue(operation.getValue()));
                     }
                     break;
                 case COPY:
@@ -119,7 +119,7 @@ public class ContextualJsonPatch<T> {
                         unsupportedOperationTypes.add(JsonPatchOperationType.COPY);
                     } else {
 
-                        copyOperation.copy(copiedContext, new JsonPath(operation.getFrom()), path);
+                        copiedContext = copyOperation.copy(copiedContext, new JsonPath(operation.getFrom()), path);
                     }
                     break;
                 case MOVE:
@@ -127,7 +127,7 @@ public class ContextualJsonPatch<T> {
                         unsupportedOperationTypes.add(JsonPatchOperationType.MOVE);
                     } else {
 
-                        moveOperation.move(copiedContext, new JsonPath(operation.getFrom()), path);
+                        copiedContext = moveOperation.move(copiedContext, new JsonPath(operation.getFrom()), path);
                     }
                     break;
                 case REMOVE:
@@ -135,7 +135,7 @@ public class ContextualJsonPatch<T> {
                         unsupportedOperationTypes.add(JsonPatchOperationType.REMOVE);
                     } else {
 
-                        removeOperation.remove(copiedContext, path);
+                        copiedContext = removeOperation.remove(copiedContext, path);
                     }
                     break;
                 case REPLACE:
@@ -143,7 +143,7 @@ public class ContextualJsonPatch<T> {
                         unsupportedOperationTypes.add(JsonPatchOperationType.REPLACE);
                     } else {
 
-                        replaceOperation.replace(copiedContext, path, new JsonPatchValue(operation.getValue()));
+                        copiedContext = replaceOperation.replace(copiedContext, path, new JsonPatchValue(operation.getValue()));
                     }
                     break;
                 case TEST:

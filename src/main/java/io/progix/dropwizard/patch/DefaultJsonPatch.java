@@ -60,8 +60,9 @@ public class DefaultJsonPatch<T> extends ContextualJsonPatch<T> {
                         copiedContext = mapper.convertValue(node, typeClass);
                     } else {
 
-                        addOperation.add(copiedContext, new JsonPath(instruction.getPath()), new JsonPatchValue
-                                (instruction.getValue()));
+                        copiedContext = addOperation
+                                .add(copiedContext, new JsonPath(instruction.getPath()),
+                                        new JsonPatchValue(instruction.getValue()));
                     }
                     break;
                 case COPY:
@@ -71,7 +72,7 @@ public class DefaultJsonPatch<T> extends ContextualJsonPatch<T> {
                         copiedContext = mapper.convertValue(node, typeClass);
                     } else {
 
-                        copyOperation
+                        copiedContext = copyOperation
                                 .copy(copiedContext, new JsonPath(instruction.getFrom()), new JsonPath(instruction
                                         .getPath()));
                     }
@@ -83,7 +84,7 @@ public class DefaultJsonPatch<T> extends ContextualJsonPatch<T> {
                         copiedContext = mapper.convertValue(node, typeClass);
                     } else {
 
-                        moveOperation
+                        copiedContext = moveOperation
                                 .move(copiedContext, new JsonPath(instruction.getFrom()), new JsonPath(instruction
                                         .getPath()));
                     }
@@ -95,7 +96,7 @@ public class DefaultJsonPatch<T> extends ContextualJsonPatch<T> {
                         copiedContext = mapper.convertValue(node, typeClass);
                     } else {
 
-                        removeOperation.remove(copiedContext, new JsonPath(instruction.getPath()));
+                        copiedContext = removeOperation.remove(copiedContext, new JsonPath(instruction.getPath()));
                     }
                     break;
                 case REPLACE:
@@ -105,7 +106,7 @@ public class DefaultJsonPatch<T> extends ContextualJsonPatch<T> {
                         copiedContext = mapper.convertValue(node, typeClass);
                     } else {
 
-                        replaceOperation.replace(copiedContext, new JsonPath(instruction.getPath()), new
+                        copiedContext = replaceOperation.replace(copiedContext, new JsonPath(instruction.getPath()), new
                                 JsonPatchValue(instruction.getValue()));
                     }
                     break;

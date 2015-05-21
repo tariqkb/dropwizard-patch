@@ -20,7 +20,7 @@ apply plugin: 'signing'
 
 group = "io.progix.dropwizard"
 archivesBaseName = "dropwizard-patch"
-version = "0.2.1"
+version = "0.2.2"
 
 repositories {
     mavenLocal()
@@ -28,8 +28,8 @@ repositories {
 }
 
 dependencies {
-    compile 'io.dropwizard:dropwizard-core:0.8.0'
-    compile 'io.dropwizard:dropwizard-testing:0.8.0'
+    compile 'io.dropwizard:dropwizard-core:0.8.1'
+    compile 'io.dropwizard:dropwizard-testing:0.8.1'
     compile 'io.progix.jackson:jackson-patch:0.1.0'
     testCompile 'junit:junit:4.12'
 }

@@ -82,26 +82,26 @@ public class UserResource {
 						if (path.element(1).exists() && path.endsAt(1)) {
 							if (!path.property(2).exists()) {
 								if(path.element(1).isEndOfArray()) {
-									user.getPets().addAll(value.many(Pet.class));
+									user.getPets().addAll(value.many(Pet.class, mapper));
 								} else {
 									int petIndex = path.element(1).val();
-									user.getPets().addAll(petIndex, value.many(Pet.class));
+									user.getPets().addAll(petIndex, value.many(Pet.class, mapper));
 								}
 							} else {
 								throw new InvalidPatchPathException(path);
 							}
 						} else if (path.endsAt(0)) {
-							user.getPets().addAll(value.many(Pet.class));
+							user.getPets().addAll(value.many(Pet.class, mapper));
 						} else {
 							throw new InvalidPatchPathException(path);
 						}
 					} else if (path.property(0).is("name")) {
-						user.setName(value.one(String.class));
+						user.setName(value.one(String.class, mapper));
 					} else if (path.property(0).is("emailAddresses")) {
 						if (path.element(1).exists() && path.endsAt(1)) {
-							user.getEmailAddresses().addAll(path.element(1).val(), value.many(String.class));
+							user.getEmailAddresses().addAll(path.element(1).val(), value.many(String.class, mapper));
 						} else if (path.endsAt(0)) {
-							user.getEmailAddresses().addAll(value.many(String.class));
+							user.getEmailAddresses().addAll(value.many(String.class, mapper));
 						} else {
 							throw new InvalidPatchPathException(path);
 						}
@@ -144,26 +144,26 @@ public class UserResource {
                         if (path.element(1).exists() && path.endsAt(1)) {
                             if (!path.property(2).exists()) {
                                 if(path.element(1).isEndOfArray()) {
-                                    user.getPets().addAll(value.many(Pet.class));
+                                    user.getPets().addAll(value.many(Pet.class, mapper));
                                 } else {
                                     int petIndex = path.element(1).val();
-                                    user.getPets().addAll(petIndex, value.many(Pet.class));
+                                    user.getPets().addAll(petIndex, value.many(Pet.class, mapper));
                                 }
                             } else {
                                 throw new InvalidPatchPathException(path);
                             }
                         } else if (path.endsAt(0)) {
-                            user.getPets().addAll(value.many(Pet.class));
+                            user.getPets().addAll(value.many(Pet.class, mapper));
                         } else {
                             throw new InvalidPatchPathException(path);
                         }
                     } else if (path.property(0).is("name")) {
-                        user.setName(value.one(String.class));
+                        user.setName(value.one(String.class, mapper));
                     } else if (path.property(0).is("emailAddresses")) {
                         if (path.element(1).exists() && path.endsAt(1)) {
-                            user.getEmailAddresses().addAll(path.element(1).val(), value.many(String.class));
+                            user.getEmailAddresses().addAll(path.element(1).val(), value.many(String.class, mapper));
                         } else if (path.endsAt(0)) {
-                            user.getEmailAddresses().addAll(value.many(String.class));
+                            user.getEmailAddresses().addAll(value.many(String.class, mapper));
                         } else {
                             throw new InvalidPatchPathException(path);
                         }
@@ -264,19 +264,19 @@ public class UserResource {
                     if (path.property(0).is("pets")) {
                         if (path.element(1).exists() && path.endsAt(1)) {
                             int petIndex = path.element(1).val();
-                            user.getPets().set(petIndex, value.one(Pet.class));
+                            user.getPets().set(petIndex, value.one(Pet.class, mapper));
                         } else if (path.endsAt(0)) {
-                            user.setPets(value.many(Pet.class));
+                            user.setPets(value.many(Pet.class, mapper));
                         } else {
                             throw new InvalidPatchPathException(path);
                         }
                     } else if (path.property(0).is("name") && path.endsAt(0)) {
-                        user.setName(value.one(String.class));
+                        user.setName(value.one(String.class, mapper));
                     } else if (path.property(0).is("emailAddresses")) {
                         if (path.element(1).exists() && path.endsAt(1)) {
-                            user.getEmailAddresses().set(path.element(1).val(), value.one(String.class));
+                            user.getEmailAddresses().set(path.element(1).val(), value.one(String.class, mapper));
                         } else if (path.endsAt(0)) {
-                            user.setEmailAddresses(value.many(String.class));
+                            user.setEmailAddresses(value.many(String.class, mapper));
                         } else {
                             throw new InvalidPatchPathException(path);
                         }
@@ -298,18 +298,18 @@ public class UserResource {
                     if (path.property(0).is("pets")) {
                         if (path.element(1).exists() && path.endsAt(1)) {
                             int petIndex = path.element(1).val();
-                            return Objects.equals(user.getPets().get(petIndex), value.one(Pet.class));
+                            return Objects.equals(user.getPets().get(petIndex), value.one(Pet.class, mapper));
                         } else if (path.endsAt(0)) {
-                            return Objects.equals(user.getPets(), value.many(Pet.class));
+                            return Objects.equals(user.getPets(), value.many(Pet.class, mapper));
                         }
                     } else if (path.property(0).is("name") && path.endsAt(0)) {
-                        return Objects.equals(user.getName(), value.one(String.class));
+                        return Objects.equals(user.getName(), value.one(String.class, mapper));
                     } else if (path.property(0).is("emailAddresses")) {
                         if (path.element(1).exists() && path.endsAt(1)) {
                             return Objects.equals(user.getEmailAddresses().get(path.element(1).val()),
-                                    value.one(String.class));
+                                    value.one(String.class, mapper));
                         } else if (path.endsAt(0)) {
-                            return Objects.equals(user.getEmailAddresses(), value.many(String.class));
+                            return Objects.equals(user.getEmailAddresses(), value.many(String.class, mapper));
                         }
                     }
                 }
@@ -343,26 +343,26 @@ public class UserResource {
                         if (path.element(1).exists() && path.endsAt(1)) {
                             if (!path.property(2).exists()) {
 								if(path.element(1).isEndOfArray()) {
-									user.getPets().addAll(value.many(Pet.class));
+									user.getPets().addAll(value.many(Pet.class, mapper));
 								} else {
 									int petIndex = path.element(1).val();
-									user.getPets().addAll(petIndex, value.many(Pet.class));
+									user.getPets().addAll(petIndex, value.many(Pet.class, mapper));
 								}
                             } else {
                                 throw new InvalidPatchPathException(path);
                             }
                         } else if (path.endsAt(0)) {
-                            user.getPets().addAll(value.many(Pet.class));
+                            user.getPets().addAll(value.many(Pet.class, mapper));
                         } else {
                             throw new InvalidPatchPathException(path);
                         }
                     } else if (path.property(0).is("name")) {
-                        user.setName(value.one(String.class));
+                        user.setName(value.one(String.class, mapper));
                     } else if (path.property(0).is("emailAddresses")) {
                         if (path.element(1).exists() && path.endsAt(1)) {
-                            user.getEmailAddresses().addAll(path.element(1).val(), value.many(String.class));
+                            user.getEmailAddresses().addAll(path.element(1).val(), value.many(String.class, mapper));
                         } else if (path.endsAt(0)) {
-                            user.getEmailAddresses().addAll(value.many(String.class));
+                            user.getEmailAddresses().addAll(value.many(String.class, mapper));
                         } else {
                             throw new InvalidPatchPathException(path);
                         }
@@ -449,19 +449,19 @@ public class UserResource {
                     if (path.property(0).is("pets")) {
                         if (path.element(1).exists() && path.endsAt(1)) {
                             int petIndex = path.element(1).val();
-                            user.getPets().set(petIndex, value.one(Pet.class));
+                            user.getPets().set(petIndex, value.one(Pet.class, mapper));
                         } else if (path.endsAt(0)) {
-                            user.setPets(value.many(Pet.class));
+                            user.setPets(value.many(Pet.class, mapper));
                         } else {
                             throw new InvalidPatchPathException(path);
                         }
                     } else if (path.property(0).is("name") && path.endsAt(0)) {
-                        user.setName(value.one(String.class));
+                        user.setName(value.one(String.class, mapper));
                     } else if (path.property(0).is("emailAddresses")) {
                         if (path.element(1).exists() && path.endsAt(1)) {
-                            user.getEmailAddresses().set(path.element(1).val(), value.one(String.class));
+                            user.getEmailAddresses().set(path.element(1).val(), value.one(String.class, mapper));
                         } else if (path.endsAt(0)) {
-                            user.setEmailAddresses(value.many(String.class));
+                            user.setEmailAddresses(value.many(String.class, mapper));
                         } else {
                             throw new InvalidPatchPathException(path);
                         }
@@ -481,18 +481,18 @@ public class UserResource {
                     if (path.property(0).is("pets")) {
                         if (path.element(1).exists() && path.endsAt(1)) {
                             int petIndex = path.element(1).val();
-                            return Objects.equals(user.getPets().get(petIndex), value.one(Pet.class));
+                            return Objects.equals(user.getPets().get(petIndex), value.one(Pet.class, mapper));
                         } else if (path.endsAt(0)) {
-                            return Objects.equals(user.getPets(), value.many(Pet.class));
+                            return Objects.equals(user.getPets(), value.many(Pet.class, mapper));
                         }
                     } else if (path.property(0).is("name") && path.endsAt(0)) {
-                        return Objects.equals(user.getName(), value.one(String.class));
+                        return Objects.equals(user.getName(), value.one(String.class, mapper));
                     } else if (path.property(0).is("emailAddresses")) {
                         if (path.element(1).exists() && path.endsAt(1)) {
                             return Objects.equals(user.getEmailAddresses().get(path.element(1).val()),
-                                    value.one(String.class));
+                                    value.one(String.class, mapper));
                         } else if (path.endsAt(0)) {
-                            return Objects.equals(user.getEmailAddresses(), value.many(String.class));
+                            return Objects.equals(user.getEmailAddresses(), value.many(String.class, mapper));
                         }
                     }
                 }

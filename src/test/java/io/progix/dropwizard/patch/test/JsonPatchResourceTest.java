@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.testing.junit.ResourceTestRule;
+import io.progix.dropwizard.patch.JsonPatchDeserializerHelper;
 import io.progix.dropwizard.patch.Pet;
 import io.progix.dropwizard.patch.User;
 import io.progix.dropwizard.patch.UserResource;
@@ -47,11 +48,17 @@ public class JsonPatchResourceTest {
     private String type;
     private UserStore dao = new UserStore();
 
-    private ObjectMapper mapper = Jackson.newObjectMapper();
+    private static ObjectMapper mapper = Jackson.newObjectMapper();
+    static {
+        JsonPatchDeserializerHelper.register(mapper);
+    }
 
     @Rule
-    public ResourceTestRule resources = ResourceTestRule.builder().addProvider(PatchTestFailedExceptionMapper.class).
-            addResource(new UserResource(dao)).build();
+    public ResourceTestRule resources = ResourceTestRule.builder()
+            .setMapper(mapper)
+            .addProvider(PatchTestFailedExceptionMapper.class)
+            .addResource(new UserResource(dao))
+            .build();
 
     public JsonPatchResourceTest(String type) {
         this.type = type;

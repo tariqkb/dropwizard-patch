@@ -17,7 +17,7 @@
 package io.progix.dropwizard.patch;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.dropwizard.jackson.Jackson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,21 +44,22 @@ public class JsonPatchValue {
      * This method is used to cast and map the list of objects in this class to a specified known class using Jackson
      *
      * @param clazz The class to cast the elements of this list to
+     * @param mapper
      * @param <T>   The class type of the class param
      *
      * @return A list of value casted and mapped to the specified class
      */
-    public <T> List<T> many(Class<T> clazz) {
+    public <T> List<T> many(Class<T> clazz, ObjectMapper mapper) {
         List<T> mappedValues = new ArrayList<>();
         if (value.isArray()) {
             for (JsonNode valueElement : value) {
                 if (valueElement == null) {
                     mappedValues.add(null);
                 }
-                mappedValues.add(Jackson.newObjectMapper().convertValue(valueElement, clazz));
+                mappedValues.add(mapper.convertValue(valueElement, clazz));
             }
         } else {
-            mappedValues.add(Jackson.newObjectMapper().convertValue(value, clazz));
+            mappedValues.add(mapper.convertValue(value, clazz));
         }
         return mappedValues;
     }
@@ -67,17 +68,18 @@ public class JsonPatchValue {
      * This method is used to cast and map the list of objects in this class to a specified known class using Jackson
      *
      * @param clazz The class to cast the single element of this list to
+     * @param mapper
      * @param <T>   The class type of the class param
      *
      * @return A single value casted and mapped to the specified class.
      *
      * @throws IndexOutOfBoundsException if there is more than one element in the list or if the list is empty.
      */
-    public <T> T one(Class<T> clazz) {
+    public <T> T one(Class<T> clazz, ObjectMapper mapper) {
         if (value.isArray()) {
             throw new UnsupportedOperationException("Cannot convert a list of values into one. See many(Class");
         }
-        return Jackson.newObjectMapper().convertValue(value, clazz);
+        return mapper.convertValue(value, clazz);
     }
 
     public JsonNode getNode() {

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.testing.junit.ResourceTestRule;
+import io.progix.dropwizard.patch.JsonPatchDeserializerHelper;
 import io.progix.dropwizard.patch.Pet;
 import io.progix.dropwizard.patch.UserResource;
 import io.progix.dropwizard.patch.UserStore;
@@ -28,14 +29,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ExceptionMapperResourceTest {
 
-    private ObjectMapper mapper = Jackson.newObjectMapper();
+    private static ObjectMapper mapper = Jackson.newObjectMapper();
+    static {
+        JsonPatchDeserializerHelper.register(mapper);
+    }
+
     private UserStore dao = new UserStore();
 
     @Rule
-    public ResourceTestRule resources = ResourceTestRule.builder().addProvider(PatchTestFailedExceptionMapper.class)
+    public ResourceTestRule resources = ResourceTestRule.builder()
+            .setMapper(mapper)
+            .addProvider(PatchTestFailedExceptionMapper.class)
             .addProvider(PatchOperationNotSupportedExceptionMapper.class)
-            .addProvider(InvalidPatchPathExceptionMapper.class).
-                    addResource(new UserResource(dao)).build();
+            .addProvider(InvalidPatchPathExceptionMapper.class)
+            .addResource(new UserResource(dao))
+            .build();
 
     @Test
     public void testContextualInvalidPath() {

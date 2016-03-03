@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.testing.FixtureHelpers;
 import io.progix.dropwizard.patch.DefaultJsonPatch;
+import io.progix.dropwizard.patch.JsonPatchDeserializerHelper;
 import io.progix.dropwizard.patch.JsonTestCase;
 import io.progix.jackson.JsonPatchOperation;
 import io.progix.jackson.exceptions.JsonPatchFailedException;
@@ -40,7 +41,10 @@ import static org.assertj.core.api.Assertions.fail;
 public class SpecTests {
 
     private final JsonTestCase testCase;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
+    static {
+        JsonPatchDeserializerHelper.register(mapper);
+    }
 
     public SpecTests(JsonTestCase testCase) {
         this.testCase = testCase;
@@ -56,7 +60,7 @@ public class SpecTests {
             JsonNode documentNode = mapper.readTree(testCase.getDoc());
 
             JsonPatchOperation[] patchOperations = mapper.convertValue(testCase.getPatch(), JsonPatchOperation[].class);
-            DefaultJsonPatch<JsonNode>  patch = new DefaultJsonPatch<>(Arrays.asList(patchOperations));
+            DefaultJsonPatch<JsonNode>  patch = new DefaultJsonPatch<>(Arrays.asList(patchOperations), mapper);
 
             JsonNode resultNode = patch.apply(documentNode);
             if (testCase.isErrorCase()) {
@@ -81,7 +85,6 @@ public class SpecTests {
     public static Collection<Object[]> data() {
         List<Object[]> datas = new ArrayList<Object[]>();
 
-        ObjectMapper mapper = new ObjectMapper();
         JsonTestCase[] testCases;
 
         try {

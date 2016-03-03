@@ -43,7 +43,6 @@ import java.util.Set;
  * {@link BasicJsonPatch#apply()} is used to apply all handler logic and should be called before the end of the resource
  * method for patching to occur.
  */
-@JsonDeserialize(using = BasicJsonPatchDeserializer.class)
 public class BasicJsonPatch {
 
     private List<JsonPatchOperation> operations;

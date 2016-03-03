@@ -17,6 +17,7 @@
 package io.progix.dropwizard.patch;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.progix.dropwizard.patch.exception.PatchOperationNotSupportedException;
 import io.progix.dropwizard.patch.operations.contextual.ContextualAddOperation;
@@ -47,10 +48,12 @@ import java.util.Set;
  *
  * @param <T> The type of object that will be patched
  */
-@JsonDeserialize(using = ContextualJsonPatchDeserializer.class)
 public class ContextualJsonPatch<T> {
 
     protected List<JsonPatchOperation> operations;
+
+    @JsonIgnore
+    protected final ObjectMapper mapper;
 
     @JsonIgnore
     protected ContextualAddOperation<T> addOperation;
@@ -70,8 +73,9 @@ public class ContextualJsonPatch<T> {
      *
      * @param operations A list of {@link JsonPatchOperation}
      */
-    public ContextualJsonPatch(List<JsonPatchOperation> operations) {
+    public ContextualJsonPatch(List<JsonPatchOperation> operations, ObjectMapper mapper) {
         this.operations = operations;
+        this.mapper = mapper;
     }
 
     /**
@@ -98,7 +102,7 @@ public class ContextualJsonPatch<T> {
      */
     public T apply(T context) throws JsonPatchTestFailedException {
 
-        T copiedContext = PatchUtil.copy(context);
+        T copiedContext = PatchUtil.copy(context, mapper);
 
         Set<JsonPatchOperationType> unsupportedOperationTypes = new HashSet<>();
 

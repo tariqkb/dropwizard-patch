@@ -8,9 +8,7 @@ import java.io.IOException;
 
 public class PatchUtil {
 
-    public static final ObjectMapper mapper = Jackson.newObjectMapper();
-
-    public static <T> T copy(T object) {
+    public static <T> T copy(T object, ObjectMapper mapper) {
         if(object instanceof JsonNode) {
             return (T) ((JsonNode) object).deepCopy();
         }

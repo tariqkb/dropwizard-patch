@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.dropwizard.jackson.Jackson;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.progix.jackson.JsonPatchOperation;
 
 import java.io.IOException;
@@ -36,11 +36,22 @@ import java.util.Arrays;
  */
 public class DefaultJsonPatchDeserializer extends JsonDeserializer<DefaultJsonPatch<?>> {
 
+	private final ObjectMapper mapper;
+
+	public DefaultJsonPatchDeserializer(ObjectMapper mapper) {
+		this.mapper = mapper;
+	}
+
 	@Override
 	public DefaultJsonPatch<?> deserialize(JsonParser jp,
 			DeserializationContext ctxt) throws IOException, JsonProcessingException {
-		ObjectMapper mapper = Jackson.newObjectMapper();
 		JsonPatchOperation[] instructions = mapper.readValue(jp, JsonPatchOperation[].class);
-		return new DefaultJsonPatch<Object>(Arrays.asList(instructions));
+		return new DefaultJsonPatch<Object>(Arrays.asList(instructions), mapper);
+	}
+
+	public void register() {
+		final SimpleModule module = new SimpleModule();
+		module.addDeserializer(DefaultJsonPatch.class, this);
+		mapper.registerModule(module);
 	}
 }

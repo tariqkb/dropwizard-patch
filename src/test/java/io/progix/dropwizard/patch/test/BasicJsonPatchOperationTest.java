@@ -22,6 +22,9 @@ import static org.junit.Assert.fail;
 public class BasicJsonPatchOperationTest {
 
     private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
+    static {
+        JsonPatchDeserializerHelper.register(MAPPER);
+    }
 
     private final Map<JsonPatchOperationType, Boolean> includeMap;
 
